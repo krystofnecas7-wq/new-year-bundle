@@ -522,12 +522,13 @@ body {
 
 .top-countdown-big {
   margin: 4px 0 0;
-  font-size: clamp(2.6rem, 13vw, 3.8rem);
+  font-size: clamp(2.3rem, 11vw, 3.4rem);
   font-weight: 900;
   line-height: 1;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .top-countdown-last {

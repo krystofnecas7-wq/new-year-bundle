@@ -104,15 +104,28 @@ function getLoginName() {
   }
 }
 
-// Format ms into a big human countdown. No dashes.
+// Format ms into a human countdown. No dashes.
+// Nad hodinu: "2 d 5 h 30 min" (klidný, bez vteřin, nebliká).
+// Pod hodinu: "MM:SS" (odpočet do úderu, i s vteřinami).
 function formatCountdown(ms) {
   if (ms < 0) ms = 0;
   const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
   const pad = (n) => String(n).padStart(2, "0");
-  if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
+
+  if (totalSec >= 3600) {
+    const totalMin = Math.floor(totalSec / 60);
+    const d = Math.floor(totalMin / (60 * 24));
+    const h = Math.floor((totalMin % (60 * 24)) / 60);
+    const m = totalMin % 60;
+    const parts = [];
+    if (d > 0) parts.push(`${d} d`);
+    parts.push(`${h} h`);
+    parts.push(`${m} min`);
+    return parts.join(" ");
+  }
+
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
   return `${pad(m)}:${pad(s)}`;
 }
 
