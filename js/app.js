@@ -214,24 +214,50 @@ function renderZoneScreen(state) {
   const nextZone = state.nextZone;
   const msToNext = state.msUntilNextZone;
 
-  // Challenge preview: if the NEXT zone carries an action and it is within the
-  // lead time, tease it. This does not disrupt the running task.
+  // Are we within the lead time before the next zone's midnight?
+  const leadMs = CHALLENGE_PREVIEW_MINUTES * 60 * 1000;
+  const nextIsWithinLead = nextZone != null && msToNext <= leadMs;
+  const nextIsAction = nextZone != null && isActionZone(nextZone);
+
+  // Dole: upozornění na další zónu. Žádná omáčka, jen co si nachystat. Ukazuje
+  // se po celou dobu aktuální zóny, aby byl čas sehnat věci (hrozny, kufr...).
+  // Prázdný prep znamená "teď není potřeba nic".
+  let nextHeadsUpHtml = "";
+  if (nextZone) {
+    const prep = (nextZone.prep || "").trim();
+    const prepLine = prep.length > 0 ? prep : "Teď není potřeba nic.";
+    nextHeadsUpHtml = `
+      <div class="next-prep">
+        <p class="next-prep-zone">Další zóna: <strong>${nextZone.label}</strong> (${nextZone.czTime}, ${nextDate})</p>
+        <p class="next-prep-line">${prepLine}</p>
+      </div>`;
+  }
+
+  // 5 min před půlnocí další akční zóny vytáhneme plnou výzvu dopředu, ať se
+  // věci na odbití (odpočet, 12 hroznů do úderů) dají stihnout.
   let previewHtml = "";
-  if (nextZone && isActionZone(nextZone)) {
-    const leadMs = CHALLENGE_PREVIEW_MINUTES * 60 * 1000;
-    if (msToNext <= leadMs) {
-      previewHtml = `
-        <div class="preview card">
-          <p class="preview-kicker">Za ${CHALLENGE_PREVIEW_MINUTES} min tě čeká tohle, nachystej se</p>
-          <p class="preview-zone">${nextZone.label} <span class="dim">(${nextZone.czTime})</span></p>
-          <p class="preview-text">${nextZone.challenge}</p>
-        </div>`;
-    }
+  if (nextIsAction && nextIsWithinLead) {
+    previewHtml = `
+      <div class="preview card">
+        <p class="preview-kicker">Za chvíli TEĎ, naposled se nachystej</p>
+        <p class="preview-zone">${nextZone.label} <span class="dim">(${nextZone.czTime})</span></p>
+        <p class="preview-text">${nextZone.challenge}</p>
+      </div>`;
   }
 
   // The context zone is info only (a pauza) when it does not carry an action.
   const contextIsInfoOnly = !isActionZone(contextZone);
   const contextIsPauza = contextZone && contextZone.celebrates === false;
+
+  // Date of this zone and the next, in Czech time, so late zones read clearly
+  // as the next day (1. 1. 2027).
+  const contextStart = ZONE_STARTS[contextIndex];
+  const contextDate =
+    typeof contextStart === "number" ? formatCzDate(contextStart) : "";
+  const nextDate =
+    nextZone && typeof ZONE_STARTS[contextIndex + 1] === "number"
+      ? formatCzDate(ZONE_STARTS[contextIndex + 1])
+      : "";
 
   // Merge note if the context zone is a merge group.
   const mergeHtml = contextZone && contextZone.merge
@@ -242,7 +268,7 @@ function renderZoneScreen(state) {
   // moment, not a permanent label: it lights up when the clock hits the zone's
   // start and goes dark once we are past NOW_FLASH_SECONDS into the zone. Pauza
   // zones are not action zones, so they never flash (handled by isActionZone).
-  const zoneStart = ZONE_STARTS[contextIndex];
+  const zoneStart = contextStart;
   const msSinceZoneStart =
     typeof zoneStart === "number" ? getEffectiveTime() - zoneStart : Infinity;
   const inNowWindow =
@@ -250,15 +276,6 @@ function renderZoneScreen(state) {
   const nowFlash =
     isActionZone(contextZone) && contextIndex === taskIndex && inNowWindow
       ? `<span class="now-flash">TEĎ</span>`
-      : "";
-
-  // Date of this zone's midnight in Czech time, so late zones read clearly as
-  // the next day (1. 1. 2027), not as a clash with the morning zones.
-  const contextDate =
-    typeof zoneStart === "number" ? formatCzDate(zoneStart) : "";
-  const nextDate =
-    nextZone && typeof ZONE_STARTS[contextIndex + 1] === "number"
-      ? formatCzDate(ZONE_STARTS[contextIndex + 1])
       : "";
 
   let bodyHtml = "";
@@ -339,21 +356,27 @@ function renderZoneScreen(state) {
     `;
   }
 
+  // Odpočet úplně nahoře, sticky, hned viditelný. Dole jen heads-up na další
+  // zónu s tím, co si nachystat (plus plná výzva 5 min předem).
+  const topCountdownHtml = nextZone
+    ? `
+      <div class="top-countdown">
+        <p class="top-countdown-kicker">Další zóna za</p>
+        <p class="top-countdown-big js-countdown">${formatCountdown(msToNext)}</p>
+      </div>`
+    : `
+      <div class="top-countdown top-countdown-last">
+        <p class="top-countdown-kicker">Poslední zóna noci. Dojel jsi až na konec.</p>
+      </div>`;
+
   host.innerHTML = `
+    ${topCountdownHtml}
+
     ${bodyHtml}
 
     ${previewHtml}
 
-    <div class="next-countdown">
-      ${nextZone ? `
-        <p class="next-kicker">Za jak dlouho další zóna</p>
-        <p class="next-big js-countdown">${formatCountdown(msToNext)}</p>
-        <p class="next-zone">Další na řadě: <strong>${nextZone.label}</strong> (${nextZone.czTime}, ${nextDate})</p>
-      ` : `
-        <p class="next-kicker">Tohle je poslední zóna noci.</p>
-        <p class="next-zone">Dojel jsi až na konec. Finále, ty vole.</p>
-      `}
-    </div>
+    ${nextHeadsUpHtml}
   `;
 
   renderProgressBadge();

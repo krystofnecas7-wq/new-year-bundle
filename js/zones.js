@@ -15,6 +15,7 @@
  *     tradition: string,          // what people traditionally do there
  *     perlicka: string,           // the surprising "ty vole to jsem nevedel" fact
  *     challenge: string | null,   // instructions to the reader; null when the zone does not celebrate
+ *     prep: string,               // short "co si nachystat" note; "" means nothing needed
  *     symbolicPenaltyNote: string | null, // lower-score symbolic fallback, worded as a PENALTY; null when no challenge
  *     celebrates: boolean         // false ONLY for Afghanistan and Iran (Nowruz, not Jan 1)
  *   }
@@ -42,6 +43,7 @@ export const ZONES = [
     challenge: "Jsi úplně první člověk v téhle hře, co vítá rok. Zvedni skleničku směrem na východ, tam kde za pár hodin vyjde slunce. Řekni nahlas jednu věc, co od nového roku čekáš. Vyfoť přípitek a pošli check-in.",
     symbolicPenaltyNote: "Když se ti nechce ven ani k oknu, stačí přípitek vsedě na gauči. Je to ale lajná verze, dostaneš míň bodů než za přípitek na čerstvém vzduchu.",
     celebrates: true,
+    prep: "Připrav si skleničku a najdi, kde je východ.",
   },
   {
     id: "tonga-nz",
@@ -55,6 +57,7 @@ export const ZONES = [
     challenge: "Vyber si svůj vibe: ztlum světla a dej si tichou minutu jako v kostele, nebo pusť nahlas ohňostrojové video a oslavuj jak Sky Tower. Pak pošli check-in s tím, cos zvolil.",
     symbolicPenaltyNote: "Můžeš jen napsat, co by sis vybral, bez reálné akce. Je to symbolická verze za míň bodů, protože nic reálně neuděláš.",
     celebrates: true,
+    prep: "Rozmysli si vibe: ticho jako v kostele, nebo ohňostroj naplno.",
   },
   {
     id: "sydney",
@@ -68,6 +71,7 @@ export const ZONES = [
     challenge: "Pusť si live stream ohňostroje ze Sydney (běží každý rok naživo). Koukni aspoň minutu a chovej se, jako bys tam stál. Screenshot streamu je tvůj check-in.",
     symbolicPenaltyNote: "Když stream nenajdeš, stačí starší video z loňska. Bere se to jako náhradní verze za míň bodů, protože to není naživo.",
     celebrates: true,
+    prep: "Nachystej si telefon nebo počítač na live stream.",
   },
   {
     id: "adelaide",
@@ -81,6 +85,7 @@ export const ZONES = [
     challenge: "Vem si na minutu deníček nebo poznámky v telefonu. Napiš jednu větu: co chceš, aby tě tenhle rok naučil. Fotka té věty je check-in.",
     symbolicPenaltyNote: "Můžeš to jen říct nahlas místo napsání. Je to verze za míň bodů, protože nic nezůstane.",
     celebrates: true,
+    prep: "Měj po ruce deníček nebo poznámky v telefonu.",
   },
   {
     id: "brisbane",
@@ -94,6 +99,7 @@ export const ZONES = [
     challenge: "Oslav fakt dvojité půlnoci: dej si přípitek za jejich novou hodinu a pak hned za svou další zónu. Dva loky, jedna fotka, pošli check-in.",
     symbolicPenaltyNote: "Když nemáš co pít, zvedni aspoň prázdnou skleničku. Symbolická verze za míň bodů, protože gesto bez obsahu je slabší flex.",
     celebrates: true,
+    prep: "Nalij si do skleničky, budou dva loky.",
   },
   {
     id: "darwin",
@@ -107,6 +113,7 @@ export const ZONES = [
     challenge: "Tohle je zastávka na playlist. Hoď do příběhu nebo do DM jeden song, co ti má dělat soundtrack ke zbytku noci. Link nebo screenshot je tvůj check-in.",
     symbolicPenaltyNote: "Když link neposíláš, napiš aspoň jméno písničky. Je to náhradní verze za míň bodů, protože ostatní si to nepustí.",
     celebrates: true,
+    prep: "Vyber jeden song, co pustíš jako soundtrack noci.",
   },
   {
     id: "japonsko-eucla",
@@ -120,6 +127,7 @@ export const ZONES = [
     challenge: "Teď je čas na ticho. Zavři oči a nadechni se 108krát? Ne, to je moc. Nadechni se pomalu desetkrát a u každého výdechu pusť jednu věc, co tě ten rok štvala. Pak pošli check-in se slovem, co ti po tom zbylo.",
     symbolicPenaltyNote: "Když se ti deset nádechů nechce, dej aspoň jeden pořádný. Je to verze za míň bodů, protože klid se nedá odbýt za tři vteřiny.",
     celebrates: true,
+    prep: "Najdi si klidný kout, kde tě pět minut nikdo nevyruší.",
   },
   {
     id: "filipiny",
@@ -133,6 +141,7 @@ export const ZONES = [
     challenge: "Udělej na deset vteřin co největší kravál, co ti byt dovolí. Pak třikrát vyskoč co nejvýš. Video toho chaosu je tvůj check-in.",
     symbolicPenaltyNote: "Když máš pod sebou spící sousedy, stačí tichý výskok bez randálu. Symbolická verze za míň bodů, protože půlka té tradice je právě ten rámus.",
     celebrates: true,
+    prep: "Zkontroluj, jak nahlas si můžeš dovolit randál. Pak buď připravený skákat.",
   },
   {
     id: "thajsko",
@@ -146,6 +155,7 @@ export const ZONES = [
     challenge: "Napiš zprávu někomu, s kým jsi dlouho nemluvil. Fakt ji odešli, ne jen naťukej. Screenshot odeslané zprávy (text můžeš zakrýt) je check-in.",
     symbolicPenaltyNote: "Když si fakt netroufneš odeslat, naťukej ji aspoň celou a ulož. Je to verze za míň bodů, protože neodeslaná zpráva nikomu neudělá radost.",
     celebrates: true,
+    prep: "Rozmysli si, komu dávno nenapsanému pošleš zprávu.",
   },
   {
     id: "myanmar",
@@ -159,6 +169,7 @@ export const ZONES = [
     challenge: "Zapal svíčku (nebo rozsviť svíčku v telefonu, no judgment). Řekni nahlas tři věci, za které jsi letos vděčný. Fotka plamínku je tvůj check-in.",
     symbolicPenaltyNote: "Když nemáš svíčku ani appku, stačí tři věci říct potmě. Verze za míň bodů, protože světýlko k tomu patří.",
     celebrates: true,
+    prep: "Měj po ruce svíčku nebo appku se svíčkou.",
   },
   {
     id: "banglades-nepal-indie",
@@ -172,6 +183,7 @@ export const ZONES = [
     challenge: "Napiš na papír jednu věc ze starého roku, co má definitivně skončit. Pak papír spal (bezpečně, do dřezu nebo popelníku) nebo roztrhej na malé kousky. Video pálení nebo trhání je check-in za celou trojici.",
     symbolicPenaltyNote: "Když nemůžeš nic pálit, aspoň papír roztrhej a vyhoď. Je to verze za míň bodů, protože oheň má větší říz než koš.",
     celebrates: true,
+    prep: "Napiš na papír jednu věc ze starého roku, co má skončit. Měj po ruce dřez nebo popelník.",
   },
   {
     id: "uzbekistan",
@@ -185,6 +197,7 @@ export const ZONES = [
     challenge: "Řekni si přání potichu do skleničky, než se napiješ. Jedno konkrétní, ne obecné hovno typu 'ať je líp'. Fotka skleničky je check-in.",
     symbolicPenaltyNote: "Když zrovna nepiješ, pošeptej přání do dlaně. Verze za míň bodů, protože sklenička k tomu patří.",
     celebrates: true,
+    prep: "Nalij si do skleničky a buďte pohromadě.",
   },
   {
     id: "afghanistan",
@@ -198,6 +211,7 @@ export const ZONES = [
     challenge: null,
     symbolicPenaltyNote: null,
     celebrates: false,
+    prep: "",
   },
   {
     id: "azerbajdzan",
@@ -211,6 +225,7 @@ export const ZONES = [
     challenge: "Přeskoč symbolicky plamínek: polož na zem zapálenou svíčku a opatrně ji překroč (nebo ji obejdi, když je ti to blbé). Fotka nebo video skoku je check-in.",
     symbolicPenaltyNote: "Když nechceš oheň vůbec, překroč aspoň rozsvícený telefon na zemi. Verze za míň bodů, protože plamínek dělá půlku kouzla.",
     celebrates: true,
+    prep: "Připrav si svíčku na zem, budeš ji překračovat.",
   },
   {
     id: "iran",
@@ -224,6 +239,7 @@ export const ZONES = [
     challenge: null,
     symbolicPenaltyNote: null,
     celebrates: false,
+    prep: "",
   },
   {
     id: "rusko",
@@ -237,6 +253,7 @@ export const ZONES = [
     challenge: "Odpočítej nahlas od dvanácti do nuly, jako by zrovna odbíjely Kremelské hodiny. Do nuly stihni vyslovit jedno konkrétní přání na celý rok. Video odpočtu s přáním na konci je tvůj check-in téhle MEGA zóny.",
     symbolicPenaltyNote: "Když se ti nechce nahlas, odpočítej aspoň v hlavě a přání napiš do zprávy. Verze za míň bodů, protože MEGA kotva si zaslouží tvůj hlas, ne jen palce.",
     celebrates: true,
+    prep: "Nalij si do skleničky a buďte pohromadě na odpočet.",
   },
   {
     id: "recko",
@@ -250,6 +267,7 @@ export const ZONES = [
     challenge: "Pošli do DM nebo napiš na papír jedno trapné tajemství z letoška. Nemusí být vážné, čím blbější, tím líp. Screenshot nebo fotka (klidně rozmazaná) je check-in.",
     symbolicPenaltyNote: "Když si netroufneš, napiš aspoň 'tohle bych nikomu neřekl' a jeden emoji. Verze za míň bodů, protože bez obsahu je to jen náznak.",
     celebrates: true,
+    prep: "Rozmysli si jedno trapné tajemství z letoška.",
   },
   {
     id: "cesko",
@@ -263,6 +281,7 @@ export const ZONES = [
     challenge: "Žádný složitý úkol, dneska je to o tobě. Připij si, rozkroj jablko napříč a koukni na hvězdičku uvnitř, dej pusu komukoliv po ruce (i psovi, no judgment). Jedna fotka přípitku je tvůj check-in.",
     symbolicPenaltyNote: "Když nemáš jablko ani s kým si připít, stačí přípitek s vodou sám sobě. Verze za míň bodů, protože domácí MEGA si zaslouží aspoň pořádnou skleničku.",
     celebrates: true,
+    prep: "Nachystej jablko, nůž a skleničku. Buďte pohromadě.",
   },
   {
     id: "skotsko",
@@ -276,6 +295,7 @@ export const ZONES = [
     challenge: "Pusť si Auld Lang Syne (tu písničku znáš, i když nevíš, že ji znáš). Zazpívej refrén nahlas, klidně falešně. Video nebo audio tvého zpěvu je check-in.",
     symbolicPenaltyNote: "Když fakt nezpíváš, pusť aspoň píseň a pošli screenshot přehrávače. Verze za míň bodů, protože zpěv je celá pointa.",
     celebrates: true,
+    prep: "Najdi si Auld Lang Syne, ať ji máš připravenou.",
   },
   {
     id: "kapverdy",
@@ -289,6 +309,7 @@ export const ZONES = [
     challenge: "Pusť jakoukoliv svižnou písničku a tancuj aspoň třicet vteřin. Nikdo tě nehodnotí, ty vole, hlavně se hýbej. Video tance je check-in.",
     symbolicPenaltyNote: "Když fakt nemůžeš tančit, aspoň pořádně podupej do rytmu vsedě. Verze za míň bodů, protože pohyb je o dost víc než klepání nohou.",
     celebrates: true,
+    prep: "Vyber svižnou písničku na třicet vteřin tance.",
   },
   {
     id: "brazilie",
@@ -302,6 +323,7 @@ export const ZONES = [
     challenge: "Přeskoč sedm vln. Nemáš moře? V klidu. Sedmkrát vyskoč na místě a u každého skoku si něco přej. Sedm skoků, sedm přání, jedno video. To je tvůj check-in.",
     symbolicPenaltyNote: "Když fakt nemůžeš skákat, udělej aspoň sedm dřepů nebo sedm hlubokých nádechů s přáním. Verze za míň bodů, protože skok přes vlnu má říz, co dřep nedožene.",
     celebrates: true,
+    prep: "Udělej si místo na sedm skoků.",
   },
   {
     id: "argentina",
@@ -315,6 +337,7 @@ export const ZONES = [
     challenge: "Sněz dvanáct kousků čehokoliv rychle po sobě (hrozny ideálně, ale klidně dvanáct lupínků) a u každého si něco přej. Video toho zběsilého cpaní je check-in. Ano, díváme se na tebe, co to budeš zakuckávat ve čtyři ráno.",
     symbolicPenaltyNote: "Když nemáš dvanáct kousků jídla, polkni aspoň dvanáct loků vody za sebou. Verze za míň bodů, protože voda nepočítá tak jako jídlo.",
     celebrates: true,
+    prep: "Připrav si 12 hroznů (nebo 12 lupínků) a buďte pohromadě.",
   },
   {
     id: "newfoundland",
@@ -328,6 +351,7 @@ export const ZONES = [
     challenge: "Dej pusu rybě. Máš doma rybí konzervu, mraženou rybu nebo aspoň obrázek ryby v telefonu? Pusa na displej platí. Fotka toho polibku je check-in.",
     symbolicPenaltyNote: "Když fakt nemáš žádnou rybu ani fotku, dej pusu čemukoliv studenému z lednice. Verze za míň bodů, protože pravá (nebo aspoň vyfocená) ryba je celý vtip.",
     celebrates: true,
+    prep: "Sežeň rybu, konzervu, mraženou, nebo aspoň fotku ryby.",
   },
   {
     id: "venezuela",
@@ -341,6 +365,7 @@ export const ZONES = [
     challenge: "Popadni kufr nebo batoh a projdi se s ním. Klidně jen po bytě, kolem stolu, na balkon a zpět. Video nebo fotka s kufrem v ruce je check-in.",
     symbolicPenaltyNote: "Když nemáš kufr, vem aspoň tašku a projdi se s ní. Verze za míň bodů, protože s taškou se moc daleko necestuje.",
     celebrates: true,
+    prep: "Měj po ruce kufr nebo batoh.",
   },
   {
     id: "usa-newyork",
@@ -354,6 +379,7 @@ export const ZONES = [
     challenge: "Udělej vlastní mini ball drop. Vezmi ponožku (ideálně čistou, ale nebudeme kontrolovat) a nech ji pomalu padat při odpočtu od deseti. Video padající ponožky je tvůj check-in.",
     symbolicPenaltyNote: "Když se ti nechce hledat ponožku, nech spadnout cokoliv měkkého po ruce. Verze za míň bodů, protože ponožkový ball drop je prostě ikonický.",
     celebrates: true,
+    prep: "Najdi ponožku na vlastní ball drop.",
   },
   {
     id: "mexiko",
@@ -367,6 +393,7 @@ export const ZONES = [
     challenge: "Dej si něco k jídlu, cokoliv teplého nebo pořádného. Jsi vzhůru skoro celou noc, zasloužíš si to. Fotka jídla je check-in.",
     symbolicPenaltyNote: "Když fakt nemáš nic k jídlu, dej si aspoň teplý čaj nebo kafe. Verze za míň bodů, protože pořádné sousto tě na nohou udrží líp.",
     celebrates: true,
+    prep: "Nachystej si něco teplého k jídlu.",
   },
   {
     id: "usa-colorado",
@@ -380,6 +407,7 @@ export const ZONES = [
     challenge: "Nalaď se na ledovou vodu, co přijde za hodinu. Opláchni si obličej studenou vodou a nahlas řekni 'jsem připravený'. Fotka mokrého ksichtu je check-in.",
     symbolicPenaltyNote: "Když se ti nechce k umyvadlu, přejeď si obličej aspoň studenou flaškou. Verze za míň bodů, protože pořádný šok vodou tě probere líp.",
     celebrates: true,
+    prep: "Buď blízko umyvadla nebo studené vody.",
   },
   {
     id: "usa-pacifik",
@@ -393,6 +421,7 @@ export const ZONES = [
     challenge: "Tvůj vlastní Polar Bear Plunge. Dej si na dvacet vteřin studenou sprchu, nebo si cákni ledovou vodu na krk a ruce. Video nebo fotka hned po tom je check-in téhle MEGA zóny.",
     symbolicPenaltyNote: "Když fakt nemáš koule na studenou sprchu, hoď si aspoň led do kalhot na pár vteřin. Verze za míň bodů, a hlavně, zasloužíš si ten mráz na blbším místě než na krku.",
     celebrates: true,
+    prep: "Připrav se na studenou sprchu nebo ledovou vodu.",
   },
   {
     id: "aljaska-marquesas",
@@ -406,6 +435,7 @@ export const ZONES = [
     challenge: "Zotavovací zóna. Zabal se do deky, dej si něco teplého k pití a prostě pět minut nic nedělej. Fotka tebe v režimu lenochod je check-in za obě zóny.",
     symbolicPenaltyNote: "Když se ti nechce ani balit do deky, aspoň si na minutu zavři oči vsedě. Verze za míň bodů, protože pořádný oddech je víc než mrknutí.",
     celebrates: true,
+    prep: "Nachystej deku a něco teplého k pití.",
   },
   {
     id: "havaj",
@@ -419,6 +449,7 @@ export const ZONES = [
     challenge: "Poslední pořádný nakop. Pusť nějaký letní banger a tancuj šedesát vteřin naplno, jako bys byl na pláži. Video tance je check-in.",
     symbolicPenaltyNote: "Když už fakt nemáš sílu na minutu, dej aspoň třicet vteřin. Verze za míň bodů, protože zkrácený tanec je zkrácený flex.",
     celebrates: true,
+    prep: "Vyber letní banger na šedesát vteřin tance.",
   },
   {
     id: "americka-samoa",
@@ -432,6 +463,7 @@ export const ZONES = [
     challenge: "Finální přípitek celé noci. Zvedni skleničku a řekni nahlas jedno jediné slovo, co vystihuje celou tuhle noc. Jen jedno. Video nebo fotka toho posledního přípitku se slovem je tvůj závěrečný check-in.",
     symbolicPenaltyNote: "Když ti už došlo pití i hlas, napiš to jedno slovo aspoň do zprávy. Verze za míň bodů, protože finále si zaslouží, abys to řekl nahlas.",
     celebrates: true,
+    prep: "Nalij si poslední skleničku a vymysli jedno slovo za celou noc.",
   },
 ];
 

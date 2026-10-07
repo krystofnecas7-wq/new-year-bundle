@@ -498,17 +498,21 @@ body {
   color: var(--ink-dim);
 }
 
-/* Next countdown */
-.next-countdown {
+/* Odpočet úplně nahoře, sticky pod topbarem, hned viditelný. */
+.top-countdown {
+  position: sticky;
+  top: 52px;
+  z-index: 4;
   text-align: center;
-  margin: 22px 0 10px;
-  padding: 18px;
-  background: var(--bg-soft);
+  margin: 0 0 10px;
+  padding: 14px 18px;
+  background: linear-gradient(160deg, #241b4a, #15152b);
+  border: 1px solid #3a3a66;
   border-radius: var(--radius);
-  border: 1px solid #2a2a4a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-.next-kicker {
+.top-countdown-kicker {
   margin: 0;
   color: var(--ink-dim);
   text-transform: uppercase;
@@ -516,20 +520,43 @@ body {
   font-size: 0.72rem;
 }
 
-.next-big {
-  margin: 6px 0;
-  font-size: clamp(2.4rem, 12vw, 3.6rem);
+.top-countdown-big {
+  margin: 4px 0 0;
+  font-size: clamp(2.6rem, 13vw, 3.8rem);
   font-weight: 900;
+  line-height: 1;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
 }
 
-.next-zone {
-  margin: 0;
+.top-countdown-last {
+  background: var(--bg-soft);
+}
+
+/* Dole: heads-up na další zónu. Jen co si nachystat, žádná omáčka. */
+.next-prep {
+  text-align: center;
+  margin: 22px 0 10px;
+  padding: 16px 18px;
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  border: 1px dashed #3a3a66;
+}
+
+.next-prep-zone {
+  margin: 0 0 6px;
   color: var(--ink-dim);
+  font-size: 0.9rem;
 }
 
-.next-zone strong {
+.next-prep-zone strong {
+  color: var(--ink);
+}
+
+.next-prep-line {
+  margin: 0;
+  font-weight: 700;
   color: var(--ink);
 }
 

@@ -5,7 +5,7 @@
  * backend. Cache-first for the shell, network fallback for everything else.
  */
 
-const CACHE = "nyb-shell-v2";
+const CACHE = "nyb-shell-v3";
 
 const SHELL = [
   "./",
