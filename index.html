@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0b1a" />
+    <meta name="description" content="Projdi celou planetou za jednu noc. 31 zastávek, 31 půlnocí, jeden pořádný Silvestr." />
+    <title>New Year Bundle</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- Demo / test control bar. Hidden unless demo mode is on. -->
+    <div id="demo-bar" class="demo-bar" hidden>
+      <span class="demo-bar-label">DEMO / TEST, tohle není opravdová funkce</span>
+      <div class="demo-bar-buttons">
+        <button id="demo-first" class="demo-btn">Na první zónu</button>
+        <button id="demo-prev" class="demo-btn">Zóna -1</button>
+        <button id="demo-next" class="demo-btn">Zóna +1</button>
+        <button id="demo-plus1" class="demo-btn">+1 min</button>
+        <button id="demo-plus5" class="demo-btn">+5 min</button>
+        <button id="demo-end" class="demo-btn">Skoč na konec</button>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">New Year Bundle</div>
+      <div class="topbar-right">
+        <span class="progress-badge"><span class="js-progress-count">0 / 31</span></span>
+        <button id="demo-toggle" class="demo-toggle">Demo mód: VYP</button>
+      </div>
+    </header>
+
+    <main class="app">
+      <!-- ONBOARDING ------------------------------------------------------- -->
+      <section id="screen-onboarding" class="screen">
+        <div class="rules card-soft">
+          <p class="rules-title">Rychlá pravidla, čti to vsedě</p>
+          <ul class="rules-list">
+            <li>Jedna noc, <strong>31</strong> zastávek po celé planetě. Každá má svou půlnoc.</li>
+            <li>U každé zóny je tradice, perlička a občas výzva. Výzvu uděláš, pak pošleš check-in.</li>
+            <li>Check-in jede přes <strong>Instagram</strong> (DM nebo Story s tagem), ne nahráváním tady.</li>
+            <li>Nestíháš naživo? Symbolická lajná verze platí, ale za míň bodů. Je to trest, ne pohodlí.</li>
+            <li>Appka ti počítá postup jako soft signál. Výhry se reálně počítají podle IG check-inů.</li>
+          </ul>
+        </div>
+
+        <div class="hero">
+          <p class="hero-kicker">První zóna startuje za</p>
+          <p class="hero-countdown js-onboarding-countdown">00:00:00</p>
+          <p class="hero-sub">Kiribati a Chathamy, <strong>11:00</strong> u tebe doma. První místo na Zemi, co vidí nový rok.</p>
+          <button id="enter-night" class="btn btn-primary btn-big">Jdu do toho</button>
+        </div>
+
+        <div class="onboarding-signup card-soft">
+          <p class="signup-kicker">Chceš připomenout, až to pojede naostro?</p>
+          <form id="onboarding-email-form" class="email-form">
+            <input type="email" required placeholder="tvuj@email.cz" class="email-input" />
+            <button class="btn btn-ghost" type="submit">Hoď mi echo</button>
+          </form>
+          <p class="email-confirm js-email-confirm" aria-live="polite"></p>
+        </div>
+
+        <div class="login-row">
+          <span class="js-login-state">Nepřihlášen, jedeš jako host</span>
+          <button class="btn btn-ghost btn-small js-mock-login">Přihlásit se</button>
+        </div>
+      </section>
+
+      <!-- ZONE ------------------------------------------------------------- -->
+      <section id="screen-zone" class="screen" hidden>
+        <div class="login-row login-row-top">
+          <span class="js-login-state">Nepřihlášen, jedeš jako host</span>
+          <button class="btn btn-ghost btn-small js-mock-login">Přihlásit se</button>
+        </div>
+        <div id="zone-content" class="zone-content"></div>
+        <p class="counter-disclaimer">
+          Postup <strong class="js-progress-count">0 / 31</strong> je jen soft signál appky,
+          takové tiché byl jsem tu. Reálné vyhodnocení výher jede podle Instagram check-inů, ne podle téhle appky.
+        </p>
+      </section>
+
+      <!-- END OF NIGHT ----------------------------------------------------- -->
+      <section id="screen-end" class="screen" hidden>
+        <div id="end-content" class="end-content"></div>
+      </section>
+    </main>
+
+    <!-- Easter egg: subtle animal fact, different each load. -->
+    <footer class="footer">
+      <p id="animal-fact" class="animal-fact"></p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

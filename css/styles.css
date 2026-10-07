@@ -1,0 +1,621 @@
+/*
+ * styles.css, New Year Bundle PWA (Phase 1 MVP).
+ * Mobile first, dark festive vibe, big readable type, bold key numbers,
+ * generous spacing so it reads fine ve dvě ráno. Hand written vanilla CSS.
+ * Comments here are not user facing, but we keep the no dash habit anyway.
+ */
+
+:root {
+  --bg: #0b0b1a;
+  --bg-soft: #15152b;
+  --bg-card: #1b1b36;
+  --ink: #f4f4ff;
+  --ink-dim: #a9a9c7;
+  --gold: #ffd166;
+  --pink: #ff5d8f;
+  --green: #39d98a;
+  --radius: 16px;
+  --maxw: 560px;
+  --space: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #241b4a 0%, transparent 60%),
+    var(--bg);
+  color: var(--ink);
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-size: 17px;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* ---- Topbar -------------------------------------------------------------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(11, 11, 26, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-badge {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--gold);
+  background: #241b4a;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.demo-toggle {
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #3a3a66;
+  background: transparent;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+
+/* ---- Demo bar ------------------------------------------------------------ */
+.demo-bar {
+  background: repeating-linear-gradient(
+    45deg,
+    #2a1133,
+    #2a1133 12px,
+    #35163f 12px,
+    #35163f 24px
+  );
+  border-bottom: 2px solid var(--pink);
+  padding: 10px 14px;
+}
+
+.demo-bar-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--pink);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.demo-bar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-btn {
+  font-size: 0.8rem;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--pink);
+  background: #1b1b36;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.demo-btn:active {
+  transform: translateY(1px);
+}
+
+/* ---- Layout -------------------------------------------------------------- */
+.app {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--space);
+}
+
+.screen {
+  animation: fade 0.25s ease;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Cards --------------------------------------------------------------- */
+.card,
+.card-soft {
+  background: var(--bg-card);
+  border: 1px solid #2a2a4a;
+  border-radius: var(--radius);
+  padding: 18px;
+  margin: 16px 0;
+}
+
+.card-soft {
+  background: var(--bg-soft);
+}
+
+.dim-card {
+  opacity: 0.78;
+}
+
+/* ---- Onboarding ---------------------------------------------------------- */
+.rules {
+  font-size: 0.9rem;
+}
+
+.rules-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 0.72rem;
+}
+
+.rules-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink-dim);
+}
+
+.rules-list li {
+  margin-bottom: 6px;
+}
+
+.rules-list strong {
+  color: var(--gold);
+}
+
+.hero {
+  text-align: center;
+  padding: 24px 10px 10px;
+}
+
+.hero-kicker {
+  margin: 0;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.78rem;
+}
+
+.hero-countdown {
+  margin: 8px 0 10px;
+  font-size: clamp(3rem, 16vw, 5rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+
+.hero-sub {
+  margin: 0 auto 18px;
+  max-width: 420px;
+  color: var(--ink);
+}
+
+.hero-sub strong {
+  color: var(--gold);
+}
+
+/* ---- Buttons ------------------------------------------------------------- */
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--bg);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #1a1200;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-big {
+  font-size: 1.2rem;
+  padding: 16px 28px;
+  border-radius: 14px;
+}
+
+.btn-alive {
+  background: #2f6f52;
+  color: var(--ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #3a3a66;
+  color: var(--ink);
+}
+
+.btn-small {
+  padding: 7px 12px;
+  font-size: 0.85rem;
+}
+
+/* ---- Email + login ------------------------------------------------------- */
+.email-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.email-input {
+  flex: 1 1 200px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #3a3a66;
+  background: #0f0f22;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.signup-kicker {
+  margin: 0 0 10px;
+  color: var(--ink-dim);
+}
+
+.email-confirm {
+  margin: 10px 0 0;
+  color: var(--green);
+  font-weight: 600;
+  min-height: 1.2em;
+}
+
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.login-row-top {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+/* ---- Zone screen --------------------------------------------------------- */
+.zone-head {
+  text-align: center;
+  padding: 6px 0 4px;
+}
+
+.zone-time {
+  margin: 0;
+  color: var(--ink-dim);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.zone-time .dim {
+  font-weight: 400;
+}
+
+.zone-label {
+  margin: 4px 0 6px;
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.dim {
+  color: var(--ink-dim);
+}
+
+.merge-note {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--green);
+}
+
+.now-flash {
+  display: inline-block;
+  margin-left: 6px;
+  background: var(--pink);
+  color: #220010;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 999px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* Perlicka is the centerpiece. */
+.perlicka {
+  background: linear-gradient(160deg, #2a1b4a, #1b1b36);
+  border: 1px solid #4a3a7a;
+  box-shadow: 0 8px 30px rgba(255, 93, 143, 0.1);
+}
+
+.perlicka-kicker,
+.tradition-kicker,
+.challenge-kicker,
+.held-kicker,
+.preview-kicker {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.perlicka-kicker {
+  color: var(--pink);
+}
+
+.perlicka p:last-child {
+  margin: 0;
+  font-size: 1.08rem;
+}
+
+.perlicka strong {
+  color: var(--gold);
+}
+
+.tradition-kicker {
+  color: var(--ink-dim);
+}
+
+.tradition {
+  margin: 0;
+  color: var(--ink);
+}
+
+/* Challenge */
+.challenge {
+  border: 1px solid var(--gold);
+  background: #221a06;
+}
+
+.challenge-kicker {
+  color: var(--gold);
+}
+
+.challenge-text {
+  margin: 0 0 10px;
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.penalty {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: #ffb3c7;
+  border-top: 1px dashed #4a3a7a;
+  padding-top: 10px;
+}
+
+.held-hint {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+.held-task .held-text {
+  margin: 0;
+}
+
+.pauza-tag {
+  margin: 6px 0 0;
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* Check-in */
+.checkin-block {
+  text-align: center;
+  margin: 18px 0;
+}
+
+.checkin-block .btn {
+  width: 100%;
+  max-width: 420px;
+}
+
+.checkin-micro {
+  margin: 0 0 10px;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+}
+
+.checkin-note {
+  margin: 10px auto 0;
+  max-width: 420px;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+}
+
+/* Preview */
+.preview {
+  border: 1px dashed var(--pink);
+  background: #1a0f22;
+}
+
+.preview-kicker {
+  color: var(--pink);
+}
+
+.preview-zone {
+  margin: 0 0 6px;
+  font-weight: 800;
+}
+
+.preview-text {
+  margin: 0;
+  color: var(--ink-dim);
+}
+
+/* Next countdown */
+.next-countdown {
+  text-align: center;
+  margin: 22px 0 10px;
+  padding: 18px;
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  border: 1px solid #2a2a4a;
+}
+
+.next-kicker {
+  margin: 0;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.72rem;
+}
+
+.next-big {
+  margin: 6px 0;
+  font-size: clamp(2.4rem, 12vw, 3.6rem);
+  font-weight: 900;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.next-zone {
+  margin: 0;
+  color: var(--ink-dim);
+}
+
+.next-zone strong {
+  color: var(--ink);
+}
+
+.counter-disclaimer {
+  margin: 20px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  text-align: center;
+  background: #16162c;
+  border: 1px solid #2a2a4a;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.counter-disclaimer strong {
+  color: var(--gold);
+}
+
+/* ---- End screen ---------------------------------------------------------- */
+.end-content {
+  text-align: center;
+  padding: 20px 6px;
+}
+
+.end-title {
+  font-size: clamp(1.8rem, 8vw, 2.4rem);
+  margin: 10px 0;
+}
+
+.end-big {
+  font-size: 1.3rem;
+  margin: 10px 0;
+}
+
+.end-number {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.end-line {
+  color: var(--ink);
+  max-width: 440px;
+  margin: 10px auto;
+}
+
+.end-disclaimer {
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  max-width: 440px;
+  margin: 16px auto;
+  background: #16162c;
+  border: 1px solid #2a2a4a;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.end-signup {
+  margin: 24px auto 0;
+  max-width: 440px;
+  text-align: left;
+}
+
+/* ---- Footer easter egg --------------------------------------------------- */
+.footer {
+  max-width: var(--maxw);
+  margin: 30px auto 0;
+  padding: 20px;
+  opacity: 0.5;
+}
+
+.animal-fact {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  text-align: center;
+  font-style: italic;
+  margin: 0;
+}
+
+.animal-fact:hover {
+  opacity: 1;
+}
+
+/* ---- Wider screens ------------------------------------------------------- */
+@media (min-width: 620px) {
+  body {
+    font-size: 18px;
+  }
+}
