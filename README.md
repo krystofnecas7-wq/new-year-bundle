@@ -65,7 +65,7 @@ scripts/              testy a pomůcky
 ## Co chybí
 
 - Texty "O pásmu" a perličky u většiny zón (doplní se z podkladů).
-- Knihovna kravin: 138 z cílových 500+.
+- Knihovna kravin: 241 z cílových 500+.
 - Opravdová mapa, reálný Instagram handle, finální logo a ikony.
 - Anglické verze obsahu zón.
 - Zvuk u odpočtu (odloženo).
