@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1340" height="1430" viewBox="0 0 1340 1430" font-family="'Segoe UI', system-ui, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17122e"/>
+      <stop offset="1" stop-color="#0b0b1a"/>
+    </linearGradient>
+    <linearGradient id="perl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a2460"/>
+      <stop offset="1" stop-color="#1b1b36"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#ff5d8f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#2a1b4a"/>
+      <stop offset="1" stop-color="#0b0b1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1340" height="1430" fill="#06060f"/>
+
+  <!-- ================= LEFT PHONE: ZONE SCREEN ================= -->
+  <g transform="translate(40,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg)" stroke="#2a2a4a" stroke-width="2"/>
+    <rect x="0" y="0" width="600" height="1350" rx="46" fill="url(#glow)"/>
+
+    <!-- status/topbar -->
+    <text x="40" y="56" fill="#f4f4ff" font-size="24" font-weight="800">New Year Bundle</text>
+    <g transform="translate(430,36)">
+      <rect width="90" height="34" rx="17" fill="#241b4a"/>
+      <text x="45" y="23" fill="#ffd166" font-size="18" font-weight="800" text-anchor="middle">14 / 31</text>
+    </g>
+    <!-- profile tucked away, subtle -->
+    <circle cx="548" cy="53" r="18" fill="#1b1b36" stroke="#3a3a66"/>
+    <text x="548" y="60" fill="#a9a9c7" font-size="18" font-weight="700" text-anchor="middle">+</text>
+
+    <!-- FLIP COUNTDOWN top -->
+    <g transform="translate(40,90)">
+      <text x="0" y="18" fill="#a9a9c7" font-size="16" letter-spacing="2" font-weight="800">DALŠÍ ZÓNA ZA</text>
+      <g transform="translate(0,32)">
+        <rect width="150" height="100" rx="14" fill="#15152b" stroke="#3a3a66"/>
+        <line x1="0" y1="82" x2="150" y2="82" stroke="#000" stroke-opacity="0.4" stroke-width="2"/>
+        <text x="75" y="82" fill="#ffd166" font-size="68" font-weight="900" text-anchor="middle" font-family="monospace">04</text>
+        <text x="75" y="150" fill="#6a6a8a" font-size="15" text-anchor="middle" font-weight="700">MIN</text>
+
+        <rect x="170" width="150" height="100" rx="14" fill="#15152b" stroke="#3a3a66"/>
+        <line x1="170" y1="82" x2="320" y2="82" stroke="#000" stroke-opacity="0.4" stroke-width="2"/>
+        <text x="245" y="82" fill="#ffd166" font-size="68" font-weight="900" text-anchor="middle" font-family="monospace">37</text>
+        <text x="245" y="150" fill="#6a6a8a" font-size="15" text-anchor="middle" font-weight="700">SEC</text>
+
+        <!-- small map chip, lze zvetsit a posouvat -->
+        <rect x="360" width="160" height="100" rx="14" fill="#101024" stroke="#3a3a66"/>
+        <text x="430" y="28" fill="#a9a9c7" font-size="13" text-anchor="middle" font-weight="700">MAPA SVĚTA</text>
+        <ellipse cx="440" cy="62" rx="60" ry="26" fill="#1b2340" stroke="#2a3358"/>
+        <ellipse cx="420" cy="58" rx="20" ry="12" fill="#243056"/>
+        <ellipse cx="465" cy="66" rx="16" ry="9" fill="#243056"/>
+        <circle cx="455" cy="58" r="9" fill="#ff5d8f"/>
+        <circle cx="455" cy="58" r="16" fill="none" stroke="#ff5d8f" stroke-opacity="0.5"/>
+        <!-- lupa, naznacuje zvetseni -->
+        <circle cx="498" cy="26" r="9" fill="none" stroke="#a9a9c7" stroke-width="2"/>
+        <line x1="505" y1="33" x2="511" y2="39" stroke="#a9a9c7" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- zone head -->
+    <g transform="translate(40,310)">
+      <text x="0" y="20" fill="#a9a9c7" font-size="18" font-weight="700">22:00 u tebe doma, 31. 12. 2026</text>
+      <text x="0" y="78" fill="#f4f4ff" font-size="58" font-weight="900">Rusko</text>
+      <rect x="0" y="96" width="110" height="30" rx="15" fill="url(#warm)"/>
+      <text x="55" y="117" fill="#2a0010" font-size="16" font-weight="900" text-anchor="middle">MEGA</text>
+    </g>
+
+    <!-- info o zemi -->
+    <g transform="translate(40,460)">
+      <rect width="520" height="104" rx="16" fill="#13132a" stroke="#2a2a4a"/>
+      <text x="20" y="30" fill="#8aa0ff" font-size="14" letter-spacing="1.5" font-weight="800">O PÁSMU</text>
+      <text x="20" y="60" fill="#d8d8ec" font-size="18">Offset +3. Moskva. 11 časových pásem</text>
+      <text x="20" y="86" fill="#d8d8ec" font-size="18">jen v jedné zemi, největší na světě.</text>
+    </g>
+
+    <!-- perlicka (centerpiece) -->
+    <g transform="translate(40,584)">
+      <rect width="520" height="150" rx="18" fill="url(#perl)" stroke="#4a3a7a"/>
+      <text x="20" y="34" fill="#ff5d8f" font-size="14" letter-spacing="1.5" font-weight="800">PERLIČKA</text>
+      <text x="20" y="68" fill="#f4f4ff" font-size="19">Napíšou si přání na papír, spálí ho,</text>
+      <text x="20" y="94" fill="#f4f4ff" font-size="19">popel nasypou do šampusu a vypijou</text>
+      <text x="20" y="120" fill="#f4f4ff" font-size="19">to, než dozní <tspan fill="#ffd166" font-weight="800">dvanáctý úder</tspan>. Jo, pijou popel.</text>
+    </g>
+
+    <!-- challenge -->
+    <g transform="translate(40,754)">
+      <rect width="520" height="150" rx="18" fill="#221a06" stroke="#ffd166"/>
+      <text x="20" y="34" fill="#ffd166" font-size="14" letter-spacing="1.5" font-weight="800">TEĎ JE ČAS NA TOHLE</text>
+      <text x="20" y="70" fill="#f4f4ff" font-size="19" font-weight="600">Odpočítej nahlas od dvanácti do nuly.</text>
+      <text x="20" y="98" fill="#f4f4ff" font-size="19" font-weight="600">Do nuly vyslov jedno konkrétní přání.</text>
+      <text x="20" y="128" fill="#ffb3c7" font-size="15">Trest za lajnou verzi: jen v hlavě, míň bodů.</text>
+    </g>
+
+    <!-- check-in button -->
+    <g transform="translate(40,924)">
+      <rect width="520" height="64" rx="14" fill="url(#warm)"/>
+      <text x="260" y="41" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">Hotovo, pošli check-in</text>
+    </g>
+    <text x="300" y="1008" fill="#8a8aa8" font-size="14" text-anchor="middle">Check-in jede přes Instagram, ne nahráváním tady.</text>
+
+    <!-- RANDOM zajimavost o cemkoliv, hned pod check-in, decentni -->
+    <g transform="translate(40,1030)">
+      <text x="0" y="16" fill="#55557a" font-size="12" letter-spacing="2" font-weight="700">NÁHODNÁ KRAVINA, NESOUVISÍ S NIČÍM</text>
+      <text x="0" y="42" fill="#8a8aa8" font-size="15" font-style="italic">Kůň v lidském měřítku by měl péro dlouhé</text>
+      <text x="0" y="63" fill="#8a8aa8" font-size="15" font-style="italic">asi 4 cm. Tak na to mysli, až se budeš machrovat.</text>
+    </g>
+
+    <!-- next prep (dole, bez omacky) -->
+    <g transform="translate(40,1110)">
+      <rect width="520" height="86" rx="16" fill="#15152b" stroke="#3a3a66" stroke-dasharray="5 4"/>
+      <text x="20" y="30" fill="#a9a9c7" font-size="15">Další zóna: <tspan fill="#f4f4ff" font-weight="800">Řecko</tspan> (23:00)</text>
+      <text x="20" y="62" fill="#f4f4ff" font-size="19" font-weight="700">Rozmysli si jedno trapné tajemství z letoška.</text>
+    </g>
+  </g>
+
+  <!-- ================= RIGHT PHONE: 10 9 8 BALL DROP ================= -->
+  <g transform="translate(700,40)">
+    <rect width="600" height="1350" rx="46" fill="#0a0618" stroke="#2a2a4a" stroke-width="2"/>
+    <radialGradient id="drop" cx="0.5" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#3a1830"/>
+      <stop offset="1" stop-color="#0a0618" stop-opacity="0"/>
+    </radialGradient>
+    <rect width="600" height="1350" rx="46" fill="url(#drop)"/>
+
+    <text x="300" y="150" fill="#ff5d8f" font-size="22" letter-spacing="4" font-weight="800" text-anchor="middle">RUSKO SLAVÍ ZA</text>
+
+    <!-- giant number -->
+    <text x="300" y="560" fill="url(#warm)" font-size="400" font-weight="900" text-anchor="middle" font-family="monospace">8</text>
+    <circle cx="300" cy="430" r="250" fill="none" stroke="#ff5d8f" stroke-opacity="0.25" stroke-width="4"/>
+    <circle cx="300" cy="430" r="300" fill="none" stroke="#ffd166" stroke-opacity="0.12" stroke-width="3"/>
+
+    <text x="300" y="720" fill="#f4f4ff" font-size="34" font-weight="800" text-anchor="middle">Nachystej skleničku.</text>
+    <text x="300" y="770" fill="#a9a9c7" font-size="24" text-anchor="middle">Do nuly musíš mít přání.</text>
+
+    <!-- mini zone reminder -->
+    <g transform="translate(90,900)">
+      <rect width="420" height="150" rx="18" fill="#15152b" stroke="#3a3a66"/>
+      <text x="30" y="44" fill="#ffd166" font-size="16" letter-spacing="1.5" font-weight="800">CO TĚ ČEKÁ</text>
+      <text x="30" y="84" fill="#f4f4ff" font-size="22" font-weight="700">12 úderů Kremelských hodin.</text>
+      <text x="30" y="118" fill="#d8d8ec" font-size="19">Odpočítej nahlas a popřej si.</text>
+    </g>
+
+    <text x="300" y="1200" fill="#8a8aa8" font-size="16" text-anchor="middle">Za chvíli TEĎ. Naposled se nachystej.</text>
+  </g>
+
+  <!-- caption strip -->
+  <text x="340" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Obrazovka zóny (klid)</text>
+  <text x="1000" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Velké odpočítávání 10 9 8</text>
+</svg>

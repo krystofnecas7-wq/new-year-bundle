@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1430" viewBox="0 0 2000 1430" font-family="'Segoe UI', system-ui, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17122e"/>
+      <stop offset="1" stop-color="#0b0b1a"/>
+    </linearGradient>
+    <linearGradient id="warm3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#ff5d8f"/>
+    </linearGradient>
+    <radialGradient id="glow3" cx="0.5" cy="0.28" r="0.85">
+      <stop offset="0" stop-color="#2a1b4a"/>
+      <stop offset="1" stop-color="#0b0b1a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="party" cx="0.5" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#3a2460"/>
+      <stop offset="1" stop-color="#0b0b1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="2000" height="1430" fill="#06060f"/>
+
+  <!-- ================= PANEL 1: RULES ================= -->
+  <g transform="translate(40,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg3)" stroke="#2a2a4a" stroke-width="2"/>
+    <rect width="600" height="1350" rx="46" fill="url(#glow3)"/>
+
+    <text x="40" y="70" fill="#f4f4ff" font-size="34" font-weight="900">Jak to celý funguje</text>
+    <text x="40" y="104" fill="#a9a9c7" font-size="17">Čti vsedě. Ve dvě ráno ti to bude k ničemu.</text>
+
+    <!-- rule blocks -->
+    <g transform="translate(40,140)" font-size="18">
+      <g>
+        <rect width="520" height="118" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="42" cy="42" r="22" fill="url(#warm3)"/><text x="42" y="50" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">1</text>
+        <text x="82" y="40" fill="#f4f4ff" font-weight="800">Jedna noc, 31 zastávek.</text>
+        <text x="82" y="70" fill="#c8c8e0">Celá planeta po půlnocích. Appka ti vždy</text>
+        <text x="82" y="94" fill="#c8c8e0">řekne, kdo zrovna slaví.</text>
+      </g>
+      <g transform="translate(0,134)">
+        <rect width="520" height="118" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="42" cy="42" r="22" fill="url(#warm3)"/><text x="42" y="50" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">2</text>
+        <text x="82" y="40" fill="#f4f4ff" font-weight="800">Splň výzvu, pošli check-in.</text>
+        <text x="82" y="70" fill="#c8c8e0">Check-in jede přes Instagram, story nebo</text>
+        <text x="82" y="94" fill="#c8c8e0">DM s tagem. Ne nahráváním tady.</text>
+      </g>
+      <g transform="translate(0,268)">
+        <rect width="520" height="118" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="42" cy="42" r="22" fill="url(#warm3)"/><text x="42" y="50" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">3</text>
+        <text x="82" y="40" fill="#f4f4ff" font-weight="800">Nestíháš? Lajná verze platí.</text>
+        <text x="82" y="70" fill="#c8c8e0">Ale za míň bodů. Je to trest, ne pohodlí.</text>
+        <text x="82" y="94" fill="#ffb3c7">Symbolicky = míň slávy.</text>
+      </g>
+      <g transform="translate(0,402)">
+        <rect width="520" height="118" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="42" cy="42" r="22" fill="url(#warm3)"/><text x="42" y="50" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">4</text>
+        <text x="82" y="40" fill="#f4f4ff" font-weight="800">Appka počítá jen pro pocit.</text>
+        <text x="82" y="70" fill="#c8c8e0">Reálné výhry se počítají podle check-inů</text>
+        <text x="82" y="94" fill="#c8c8e0">na Instagramu, ne podle téhle appky.</text>
+      </g>
+    </g>
+
+    <!-- pauza note -->
+    <g transform="translate(40,690)">
+      <rect width="520" height="110" rx="16" fill="#101c18" stroke="#2f6f52"/>
+      <text x="20" y="36" fill="#39d98a" font-size="15" letter-spacing="1.5" font-weight="800">POZOR, PAUZY</text>
+      <text x="20" y="66" fill="#c8c8e0" font-size="17">Afghánistán a Írán dneska neslaví (Nowruz</text>
+      <text x="20" y="90" fill="#c8c8e0" font-size="17">na jaře). Žádná výzva, jen oddech. Schválně.</text>
+    </g>
+
+    <g transform="translate(40,830)">
+      <rect width="520" height="68" rx="16" fill="url(#warm3)"/>
+      <text x="260" y="44" fill="#2a0010" font-size="22" font-weight="900" text-anchor="middle">Jasně, jdeme na to</text>
+    </g>
+
+    <text x="300" y="960" fill="#8a8aa8" font-size="15" text-anchor="middle">Bez omáčky. Teď už jen čekáš na první zónu.</text>
+  </g>
+
+  <!-- ================= PANEL 2: END OF NIGHT ================= -->
+  <g transform="translate(700,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg3)" stroke="#2a2a4a" stroke-width="2"/>
+    <rect width="600" height="1350" rx="46" fill="url(#party)"/>
+
+    <text x="300" y="150" fill="#a9a9c7" font-size="20" letter-spacing="2" font-weight="800" text-anchor="middle">A JE PO NOCI</text>
+
+    <text x="300" y="300" fill="#f4f4ff" font-size="34" font-weight="800" text-anchor="middle">Zvládl jsi</text>
+    <text x="300" y="470" fill="url(#warm3)" font-size="200" font-weight="900" text-anchor="middle" font-family="monospace">23</text>
+    <text x="300" y="540" fill="#c8c8e0" font-size="30" font-weight="700" text-anchor="middle">z 31 pásem.</text>
+
+    <text x="300" y="610" fill="#c8c8e0" font-size="19" text-anchor="middle">To je slušná jízda. Většinu planety jsi</text>
+    <text x="300" y="638" fill="#c8c8e0" font-size="19" text-anchor="middle">protáhl, zbytek necháme na příští rok.</text>
+
+    <!-- share card -->
+    <g transform="translate(90,690)">
+      <rect width="420" height="180" rx="18" fill="#1b1226" stroke="#ff5d8f"/>
+      <text x="30" y="44" fill="#ff5d8f" font-size="15" letter-spacing="1.5" font-weight="800">SDÍLEJ SVŮJ FLEX</text>
+      <text x="30" y="86" fill="#f4f4ff" font-size="22" font-weight="800">Přežil jsem 23 pásem</text>
+      <text x="30" y="116" fill="#f4f4ff" font-size="22" font-weight="800">za jednu noc.</text>
+      <text x="30" y="150" fill="#a9a9c7" font-size="15">Appka ti udělá kartičku do stories.</text>
+    </g>
+    <g transform="translate(90,890)">
+      <rect width="420" height="64" rx="14" fill="url(#warm3)"/>
+      <text x="210" y="41" fill="#2a0010" font-size="21" font-weight="900" text-anchor="middle">Sdílet do stories</text>
+    </g>
+
+    <!-- disclaimer -->
+    <g transform="translate(90,980)">
+      <rect width="420" height="96" rx="14" fill="#16162c" stroke="#2a2a4a"/>
+      <text x="210" y="36" fill="#a9a9c7" font-size="14" text-anchor="middle">Tohle číslo je jen tvoje osobní shrnutí.</text>
+      <text x="210" y="60" fill="#a9a9c7" font-size="14" text-anchor="middle">Reálné vyhodnocení běží podle Instagram</text>
+      <text x="210" y="80" fill="#a9a9c7" font-size="14" text-anchor="middle">check-inů, ne podle appky.</text>
+    </g>
+
+    <text x="300" y="1130" fill="#8a8aa8" font-size="15" text-anchor="middle">Žádné škatulky typu vítěz nebo smolař.</text>
+    <text x="300" y="1156" fill="#8a8aa8" font-size="15" text-anchor="middle">Jen kolik planety jsi protáhl.</text>
+  </g>
+
+  <!-- ================= PANEL 3: PROFILE + GROUP ================= -->
+  <g transform="translate(1360,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg3)" stroke="#2a2a4a" stroke-width="2"/>
+    <rect width="600" height="1350" rx="46" fill="url(#glow3)"/>
+
+    <text x="40" y="70" fill="#f4f4ff" font-size="34" font-weight="900">Ty a tvoje parta</text>
+    <text x="40" y="104" fill="#a9a9c7" font-size="17">Nic zásadního. Jen ať víš, kdo s tebou nespí.</text>
+
+    <!-- account card -->
+    <g transform="translate(40,140)">
+      <rect width="520" height="120" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+      <circle cx="60" cy="60" r="36" fill="#241b4a" stroke="#4a3a7a"/>
+      <text x="60" y="72" fill="#ffd166" font-size="34" font-weight="900" text-anchor="middle">K</text>
+      <text x="120" y="52" fill="#f4f4ff" font-size="22" font-weight="800">Kryštof</text>
+      <text x="120" y="82" fill="#a9a9c7" font-size="16">14 / 31 zón. Jedeš dobře.</text>
+      <rect x="380" y="38" width="120" height="44" rx="12" fill="#1b1b36" stroke="#3a3a66"/>
+      <text x="440" y="66" fill="#f4f4ff" font-size="15" font-weight="700" text-anchor="middle">Změnit účet</text>
+    </g>
+
+    <!-- group -->
+    <text x="40" y="312" fill="#a9a9c7" font-size="16" letter-spacing="2" font-weight="800">SKUPINA, KDO JE VZHŮRU</text>
+    <g transform="translate(40,330)" font-size="18">
+      <g>
+        <rect width="520" height="66" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="40" cy="33" r="20" fill="#2f6f52"/><text x="40" y="40" fill="#eafff4" font-size="18" font-weight="800" text-anchor="middle">T</text>
+        <text x="78" y="40" fill="#f4f4ff">Tomáš</text>
+        <text x="500" y="40" fill="#39d98a" font-weight="700" text-anchor="end">18 / 31</text>
+      </g>
+      <g transform="translate(0,78)">
+        <rect width="520" height="66" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="40" cy="33" r="20" fill="#6a3a7a"/><text x="40" y="40" fill="#fdeaff" font-size="18" font-weight="800" text-anchor="middle">A</text>
+        <text x="78" y="40" fill="#f4f4ff">Anča</text>
+        <text x="500" y="40" fill="#39d98a" font-weight="700" text-anchor="end">15 / 31</text>
+      </g>
+      <g transform="translate(0,156)">
+        <rect width="520" height="66" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="40" cy="33" r="20" fill="#7a5a2a"/><text x="40" y="40" fill="#fff3e0" font-size="18" font-weight="800" text-anchor="middle">M</text>
+        <text x="78" y="40" fill="#f4f4ff">Majk</text>
+        <text x="500" y="40" fill="#8a8aa8" font-weight="700" text-anchor="end">spí, 6 / 31</text>
+      </g>
+    </g>
+
+    <!-- invite -->
+    <g transform="translate(40,620)">
+      <rect width="520" height="150" rx="18" fill="#1b1226" stroke="#ff5d8f" stroke-dasharray="6 5"/>
+      <text x="24" y="40" fill="#ff5d8f" font-size="15" letter-spacing="1.5" font-weight="800">POZVI PARTU</text>
+      <text x="24" y="74" fill="#f4f4ff" font-size="19">Hoď jim link, ať trpíte spolu.</text>
+      <rect x="24" y="92" width="330" height="44" rx="10" fill="#0f0f22" stroke="#3a3a66"/>
+      <text x="40" y="120" fill="#a9a9c7" font-size="15" font-family="monospace">nybundle.cz/parta/x7k2</text>
+      <rect x="368" y="92" width="128" height="44" rx="10" fill="url(#warm3)"/>
+      <text x="432" y="120" fill="#2a0010" font-size="15" font-weight="800" text-anchor="middle">Kopírovat</text>
+    </g>
+
+    <!-- backup -->
+    <g transform="translate(40,800)">
+      <rect width="520" height="130" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+      <text x="24" y="38" fill="#ffd166" font-size="15" letter-spacing="1.5" font-weight="800">ZÁLOHA, KDYBY TI UMŘEL MOBIL</text>
+      <text x="24" y="70" fill="#c8c8e0" font-size="16">Postup žije v tomhle prohlížeči. Ulož si</text>
+      <text x="24" y="94" fill="#c8c8e0" font-size="16">zálohu, ať o něj nepřijdeš.</text>
+      <rect x="24" y="104" width="150" height="2" fill="none"/>
+    </g>
+    <g transform="translate(40,944)">
+      <rect width="250" height="54" rx="12" fill="#1b1b36" stroke="#3a3a66"/>
+      <text x="125" y="35" fill="#f4f4ff" font-size="16" font-weight="700" text-anchor="middle">Zálohovat postup</text>
+      <rect x="270" y="0" width="250" height="54" rx="12" fill="#1b1b36" stroke="#3a3a66"/>
+      <text x="395" y="35" fill="#f4f4ff" font-size="16" font-weight="700" text-anchor="middle">Obnovit ze zálohy</text>
+    </g>
+
+    <text x="300" y="1120" fill="#8a8aa8" font-size="15" text-anchor="middle">Skupina je jen pro pocit a srandu.</text>
+    <text x="300" y="1146" fill="#8a8aa8" font-size="15" text-anchor="middle">Žádný veřejný žebříček, žádný tlak.</text>
+  </g>
+
+  <!-- captions -->
+  <text x="340" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Pravidla / jak to funguje</text>
+  <text x="1000" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Konec noci / shrnutí</text>
+  <text x="1660" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Profil + skupina + pozvánky</text>
+</svg>

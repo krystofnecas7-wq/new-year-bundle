@@ -4,3 +4,6 @@
 .kiro./
 kiro~1/
 __pycache__/
+.kiro/artifacts/
+.kiro/settings/
+.preview-serve.log

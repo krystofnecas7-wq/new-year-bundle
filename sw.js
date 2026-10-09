@@ -1,11 +1,11 @@
 /*
- * sw.js, basic service worker for the New Year Bundle PWA.
+ * sw.js, service worker pro New Year Bundle PWA.
  *
- * Caches the app shell so the preview opens offline too. Nothing fancy, no
- * backend. Cache-first for the shell, network fallback for everything else.
+ * Nejdřív síť, cache jako záloha. Nové verze se tak ukážou hned po pushnutí
+ * a appka pořád jede i offline (třeba když v noci padne signál).
  */
 
-const CACHE = "nyb-shell-v4";
+const CACHE = "nyb-shell-v5";
 
 const SHELL = [
   "./",
@@ -15,14 +15,21 @@ const SHELL = [
   "./js/app.js",
   "./js/zones.js",
   "./js/time.js",
-  "./js/animals.js",
+  "./js/i18n.js",
+  "./js/facts.js",
+  "./js/map.js",
+  "./js/profiles.js",
+  "./js/share.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(SHELL))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -38,19 +45,17 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+  const sameOrigin = new URL(req.url).origin === self.location.origin;
+
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req)
-        .then((res) => {
-          // Opportunistically cache same-origin GETs.
-          if (res && res.ok && new URL(req.url).origin === self.location.origin) {
-            const copy = res.clone();
-            caches.open(CACHE).then((cache) => cache.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-    })
+    fetch(req)
+      .then((res) => {
+        if (res && res.ok && (sameOrigin || req.url.includes("fonts."))) {
+          const copy = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then((cached) => cached || caches.match("./index.html")))
   );
 });

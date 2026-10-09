@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1340" height="1430" viewBox="0 0 1340 1430" font-family="'Segoe UI', system-ui, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17122e"/>
+      <stop offset="1" stop-color="#0b0b1a"/>
+    </linearGradient>
+    <linearGradient id="warm2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#ff5d8f"/>
+    </linearGradient>
+    <radialGradient id="glow2" cx="0.5" cy="0.28" r="0.85">
+      <stop offset="0" stop-color="#2a1b4a"/>
+      <stop offset="1" stop-color="#0b0b1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1340" height="1430" fill="#06060f"/>
+
+  <!-- ================= LEFT: INTRO / COMING SOON ================= -->
+  <g transform="translate(40,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg2)" stroke="#2a2a4a" stroke-width="2"/>
+    <rect width="600" height="1350" rx="46" fill="url(#glow2)"/>
+
+    <!-- menu dots + lang switch tucked away -->
+    <g transform="translate(40,44)">
+      <circle cx="4" cy="4" r="4" fill="#a9a9c7"/><circle cx="4" cy="20" r="4" fill="#a9a9c7"/><circle cx="4" cy="36" r="4" fill="#a9a9c7"/>
+    </g>
+    <g transform="translate(470,30)">
+      <rect width="92" height="34" rx="17" fill="#1b1b36" stroke="#3a3a66"/>
+      <text x="30" y="23" fill="#ffd166" font-size="15" font-weight="800" text-anchor="middle">CZ</text>
+      <text x="66" y="23" fill="#55557a" font-size="15" font-weight="800" text-anchor="middle">EN</text>
+    </g>
+
+    <!-- big playful wordmark -->
+    <text x="40" y="200" fill="#f4f4ff" font-size="40" font-weight="900">Jedna noc.</text>
+    <text x="40" y="258" fill="#ff5d8f" font-size="64" font-weight="900">Celá planeta.</text>
+    <text x="40" y="312" fill="#ffd166" font-size="40" font-weight="900">31 půlnocí.</text>
+
+    <text x="40" y="372" fill="#c8c8e0" font-size="20">Projdeš Silvestr napříč světem. Od Kiribati,</text>
+    <text x="40" y="400" fill="#c8c8e0" font-size="20">co vidí rok první, až po Americkou Samou.</text>
+
+    <!-- COMING SOON flip countdown -->
+    <text x="40" y="470" fill="#a9a9c7" font-size="16" letter-spacing="3" font-weight="800">START CELÉ NOCI ZA</text>
+    <g transform="translate(40,490)">
+      <g>
+        <rect width="120" height="130" rx="16" fill="#101024" stroke="#3a3a66"/>
+        <line x1="0" y1="68" x2="120" y2="68" stroke="#000" stroke-opacity="0.45" stroke-width="2"/>
+        <text x="60" y="92" fill="#ffd166" font-size="66" font-weight="900" text-anchor="middle" font-family="monospace">82</text>
+        <text x="60" y="150" fill="#6a6a8a" font-size="15" text-anchor="middle" font-weight="700">DNÍ</text>
+      </g>
+      <g transform="translate(135,0)">
+        <rect width="120" height="130" rx="16" fill="#101024" stroke="#3a3a66"/>
+        <line x1="0" y1="68" x2="120" y2="68" stroke="#000" stroke-opacity="0.45" stroke-width="2"/>
+        <text x="60" y="92" fill="#ffd166" font-size="66" font-weight="900" text-anchor="middle" font-family="monospace">13</text>
+        <text x="60" y="150" fill="#6a6a8a" font-size="15" text-anchor="middle" font-weight="700">HOD</text>
+      </g>
+      <g transform="translate(270,0)">
+        <rect width="120" height="130" rx="16" fill="#101024" stroke="#3a3a66"/>
+        <line x1="0" y1="68" x2="120" y2="68" stroke="#000" stroke-opacity="0.45" stroke-width="2"/>
+        <text x="60" y="92" fill="#ffd166" font-size="66" font-weight="900" text-anchor="middle" font-family="monospace">47</text>
+        <text x="60" y="150" fill="#6a6a8a" font-size="15" text-anchor="middle" font-weight="700">MIN</text>
+      </g>
+    </g>
+
+    <!-- CTA -->
+    <g transform="translate(40,680)">
+      <rect width="520" height="68" rx="16" fill="url(#warm2)"/>
+      <text x="260" y="44" fill="#2a0010" font-size="24" font-weight="900" text-anchor="middle">Jdu do toho</text>
+    </g>
+
+    <!-- email signup -->
+    <g transform="translate(40,780)">
+      <text x="0" y="20" fill="#a9a9c7" font-size="17">Chceš echo, až to pojede naostro?</text>
+      <rect x="0" y="36" width="360" height="60" rx="14" fill="#0f0f22" stroke="#3a3a66"/>
+      <text x="20" y="73" fill="#6a6a8a" font-size="18">tvuj@email.cz</text>
+      <rect x="372" y="36" width="148" height="60" rx="14" fill="#1b1b36" stroke="#3a3a66"/>
+      <text x="446" y="73" fill="#f4f4ff" font-size="17" font-weight="700" text-anchor="middle">Hoď mi echo</text>
+    </g>
+
+    <!-- how it works, 3 cards (volne) -->
+    <text x="40" y="940" fill="#a9a9c7" font-size="16" letter-spacing="2" font-weight="800">JAK TO FUNGUJE</text>
+    <g transform="translate(40,960)">
+      <rect width="166" height="170" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+      <circle cx="30" cy="38" r="18" fill="url(#warm2)"/><text x="30" y="45" fill="#2a0010" font-size="20" font-weight="900" text-anchor="middle">1</text>
+      <text x="18" y="90" fill="#f4f4ff" font-size="17" font-weight="800">Čekej na</text>
+      <text x="18" y="112" fill="#f4f4ff" font-size="17" font-weight="800">zónu</text>
+      <text x="18" y="140" fill="#8a8aa8" font-size="13">Appka řekne,</text>
+      <text x="18" y="157" fill="#8a8aa8" font-size="13">kdo slaví.</text>
+
+      <g transform="translate(177,0)">
+        <rect width="166" height="170" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="30" cy="38" r="18" fill="url(#warm2)"/><text x="30" y="45" fill="#2a0010" font-size="20" font-weight="900" text-anchor="middle">2</text>
+        <text x="18" y="90" fill="#f4f4ff" font-size="17" font-weight="800">Splň výzvu</text>
+        <text x="18" y="118" fill="#8a8aa8" font-size="13">Každá zóna má</text>
+        <text x="18" y="135" fill="#8a8aa8" font-size="13">svůj úkol.</text>
+      </g>
+      <g transform="translate(354,0)">
+        <rect width="166" height="170" rx="16" fill="#15152b" stroke="#2a2a4a"/>
+        <circle cx="30" cy="38" r="18" fill="url(#warm2)"/><text x="30" y="45" fill="#2a0010" font-size="20" font-weight="900" text-anchor="middle">3</text>
+        <text x="18" y="90" fill="#f4f4ff" font-size="17" font-weight="800">Pošli</text>
+        <text x="18" y="112" fill="#f4f4ff" font-size="17" font-weight="800">check-in</text>
+        <text x="18" y="140" fill="#8a8aa8" font-size="13">Přes Instagram,</text>
+        <text x="18" y="157" fill="#8a8aa8" font-size="13">story s tagem.</text>
+      </g>
+    </g>
+
+    <text x="300" y="1230" fill="#8a8aa8" font-size="15" text-anchor="middle">25 hodin. 37 pásem slitých do 31 zastávek.</text>
+    <text x="300" y="1256" fill="#8a8aa8" font-size="15" text-anchor="middle">Žádná televizní půlnoc. Celá noc.</text>
+  </g>
+
+  <!-- ================= RIGHT: WORLD MAP ================= -->
+  <g transform="translate(700,40)">
+    <rect width="600" height="1350" rx="46" fill="url(#bg2)" stroke="#2a2a4a" stroke-width="2"/>
+
+    <text x="40" y="66" fill="#f4f4ff" font-size="30" font-weight="900">Mapa noci</text>
+    <text x="40" y="98" fill="#a9a9c7" font-size="17">Kde zrovna bouchá šampus. Táhni a přibliž.</text>
+
+    <!-- map area -->
+    <g transform="translate(40,130)">
+      <rect width="520" height="520" rx="20" fill="#0c1226" stroke="#2a3358"/>
+      <!-- crude continents -->
+      <g fill="#1c2748" stroke="#2a3358" stroke-width="1">
+        <ellipse cx="120" cy="150" rx="70" ry="48"/>
+        <ellipse cx="150" cy="320" rx="42" ry="70"/>
+        <ellipse cx="270" cy="140" rx="55" ry="40"/>
+        <ellipse cx="300" cy="250" rx="48" ry="60"/>
+        <ellipse cx="410" cy="180" rx="70" ry="52"/>
+        <ellipse cx="440" cy="360" rx="46" ry="34"/>
+      </g>
+      <!-- zone dots, dim -->
+      <g fill="#3a4a7a">
+        <circle cx="470" cy="110" r="6"/><circle cx="455" cy="150" r="6"/>
+        <circle cx="430" cy="300" r="6"/><circle cx="300" cy="130" r="6"/>
+        <circle cx="120" cy="150" r="6"/><circle cx="150" cy="330" r="6"/>
+        <circle cx="90" cy="420" r="6"/><circle cx="250" cy="430" r="6"/>
+      </g>
+      <!-- active zone, pink + glow -->
+      <circle cx="410" cy="200" r="26" fill="#ff5d8f" fill-opacity="0.18"/>
+      <circle cx="410" cy="200" r="15" fill="#ff5d8f"/>
+      <circle cx="410" cy="200" r="15" fill="none" stroke="#ffd166" stroke-width="2"/>
+      <text x="410" y="250" fill="#ff5d8f" font-size="18" font-weight="800" text-anchor="middle">Rusko slaví TEĎ</text>
+
+      <!-- zoom controls -->
+      <g transform="translate(458,20)">
+        <rect width="44" height="44" rx="10" fill="#1b1b36" stroke="#3a3a66"/><text x="22" y="31" fill="#f4f4ff" font-size="26" font-weight="800" text-anchor="middle">+</text>
+        <rect y="52" width="44" height="44" rx="10" fill="#1b1b36" stroke="#3a3a66"/><text x="22" y="83" fill="#f4f4ff" font-size="26" font-weight="800" text-anchor="middle">&#8211;</text>
+      </g>
+    </g>
+
+    <!-- legend -->
+    <g transform="translate(40,680)">
+      <circle cx="10" cy="8" r="9" fill="#ff5d8f"/><text x="30" y="14" fill="#f4f4ff" font-size="17">Slaví právě teď</text>
+      <circle cx="230" cy="8" r="7" fill="#3a4a7a"/><text x="250" y="14" fill="#a9a9c7" font-size="17">Čeká / už prošlo</text>
+    </g>
+
+    <!-- upcoming list -->
+    <text x="40" y="760" fill="#a9a9c7" font-size="16" letter-spacing="2" font-weight="800">CO TĚ ČEKÁ</text>
+    <g transform="translate(40,780)" font-size="19">
+      <g>
+        <rect width="520" height="64" rx="14" fill="#1b1226" stroke="#ff5d8f"/>
+        <text x="20" y="40" fill="#ff5d8f" font-weight="800">22:00  Rusko</text>
+        <text x="500" y="40" fill="#ffd166" font-weight="800" text-anchor="end">TEĎ</text>
+      </g>
+      <g transform="translate(0,76)">
+        <rect width="520" height="60" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <text x="20" y="38" fill="#f4f4ff">23:00  Řecko</text>
+        <text x="500" y="38" fill="#8a8aa8" text-anchor="end">za 1 h</text>
+      </g>
+      <g transform="translate(0,144)">
+        <rect width="520" height="60" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <text x="20" y="38" fill="#f4f4ff">00:00  Česko</text>
+        <text x="500" y="38" fill="#8a8aa8" text-anchor="end">za 2 h</text>
+      </g>
+      <g transform="translate(0,212)">
+        <rect width="520" height="60" rx="14" fill="#15152b" stroke="#2a2a4a"/>
+        <text x="20" y="38" fill="#f4f4ff">01:00  Skotsko</text>
+        <text x="500" y="38" fill="#8a8aa8" text-anchor="end">za 3 h</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- captions -->
+  <text x="340" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Úvod / coming soon</text>
+  <text x="1000" y="1418" fill="#6a6a8a" font-size="20" font-weight="700" text-anchor="middle">Mapa světa (zoom + posouvání)</text>
+</svg>

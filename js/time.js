@@ -81,7 +81,6 @@ const TICK_MS = 400;
 
 // ---- internal demo state ----
 let demoActive = false;
-let demoClockMs = null; // ms since epoch when demo is active
 
 const subscribers = new Set();
 let tickTimer = null;
@@ -181,8 +180,15 @@ export function zoneTimestamp(czTime, firstCzTime) {
  * @returns {number}
  */
 export function getEffectiveTime() {
-  if (demoActive && demoClockMs != null) return demoClockMs;
+  if (demoActive && demoOffsetMs != null) return Date.now() + demoOffsetMs;
   return Date.now();
+}
+
+// Demo hodiny BĚŽÍ: drží se jen posun oproti reálnému času, takže po skoku na
+// zónu odpočty tikají dál a velké TEĎ po pár vteřinách samo zmizí.
+let demoOffsetMs = null;
+function setDemoNow(ms) {
+  demoOffsetMs = ms - Date.now();
 }
 
 /** @returns {boolean} */
@@ -197,9 +203,9 @@ export function isDemoActive() {
  */
 export function setDemoActive(active) {
   demoActive = !!active;
-  if (demoActive && demoClockMs == null) {
+  if (demoActive && demoOffsetMs == null) {
     const firstStart = timestampForDay("11:00", 0);
-    demoClockMs = firstStart - 60 * 60 * 1000; // one hour before the first zone
+    setDemoNow(firstStart - 60 * 60 * 1000); // hodinu před první zónou
   }
   notify();
 }
@@ -210,11 +216,11 @@ export function setDemoActive(active) {
  */
 export function setDemoClock(dateOrOffset) {
   if (dateOrOffset instanceof Date) {
-    demoClockMs = dateOrOffset.getTime();
+    setDemoNow(dateOrOffset.getTime());
   } else if (typeof dateOrOffset === "number") {
-    demoClockMs = dateOrOffset;
+    setDemoNow(dateOrOffset);
   } else if (typeof dateOrOffset === "string") {
-    demoClockMs = new Date(dateOrOffset).getTime();
+    setDemoNow(new Date(dateOrOffset).getTime());
   }
   notify();
 }
@@ -226,8 +232,8 @@ export function setDemoClock(dateOrOffset) {
  */
 export function advanceDemo(minutes) {
   if (!demoActive) return;
-  if (demoClockMs == null) demoClockMs = Date.now();
-  demoClockMs += minutes * 60 * 1000;
+  if (demoOffsetMs == null) demoOffsetMs = 0;
+  demoOffsetMs += minutes * 60 * 1000;
   notify();
 }
 
@@ -240,7 +246,7 @@ export function setDemoToZone(zones, index) {
   if (!zones || !zones.length) return;
   const i = Math.max(0, Math.min(index, zones.length - 1));
   const starts = computeStarts(zones);
-  demoClockMs = starts[i];
+  setDemoNow(starts[i]);
   if (!demoActive) demoActive = true;
   notify();
 }
