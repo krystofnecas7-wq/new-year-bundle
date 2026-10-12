@@ -1,19 +1,26 @@
 /*
- * styles.css, New Year Bundle PWA.
- * Vzhled podle schválených návrhů: tmavá noc, teplé HAPPI akcenty,
- * flip countdown, čisté karty, velké tučné nadpisy. Mobile first.
+ * styles.css, New Year Bundle PWA, přepsáno od základu podle schválených
+ * návrhů (design/*.png).
+ *
+ * Nálada: tmavá noc ("coming soon") + teplé hravé akcenty ("HAPPI"),
+ * flip odpočet jako letištní cedule, ohňostroje v pozadí, tučná typografie.
  *
  * Barvy nesou význam:
  *   oranžová do růžové = AKCE / teď
  *   zlatá = ČAS / skóre
- *   zelená = žiješ / vzhůru
+ *   zelená = žiješ / u toho
  */
+
+/* ================================================================ */
+/* Tokeny                                                            */
+/* ================================================================ */
 
 :root {
   --bg: #0b0b1a;
   --bg2: #17122e;
   --card: #15152b;
   --card2: #1b1b36;
+  --card3: #13132a;
   --line: #2a2a4a;
   --line2: #3a3a66;
   --ink: #f4f4ff;
@@ -28,11 +35,16 @@
   --warm: linear-gradient(90deg, var(--orange), var(--pink));
   --radius: 18px;
   --maxw: 560px;
+  --top: 58px;
   --font: "Bricolage Grotesque", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
 }
 
 html,
@@ -41,20 +53,22 @@ body {
   padding: 0;
 }
 
-html {
-  background: var(--bg);
-}
-
 body {
-  background: radial-gradient(1100px 620px at 50% -8%, #2a1b4a 0%, transparent 62%),
-    linear-gradient(180deg, var(--bg2), var(--bg) 60%);
-  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
   color: var(--ink);
   font-family: var(--font);
   font-size: 17px;
   line-height: 1.5;
-  min-height: 100vh;
+  background: radial-gradient(1100px 640px at 50% -10%, #2c1c52 0%, transparent 62%),
+    linear-gradient(180deg, var(--bg2) 0%, var(--bg) 55%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }
 
 button {
@@ -78,75 +92,102 @@ strong {
   text-align: center;
 }
 
-/* ---------------- horní lišta ---------------- */
+.hint {
+  margin: 8px 2px 0;
+}
+
+/* ohňostroje v pozadí */
+.fx {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+
+.app,
+.footer,
+.topbar,
+.demo-bar {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================ */
+/* Horní lišta                                                       */
+/* ================================================================ */
 
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 16px;
-  background: rgba(11, 11, 26, 0.88);
-  backdrop-filter: blur(10px);
+  height: var(--top);
+  padding: 0 14px;
+  background: rgba(11, 11, 26, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: none;
-  border: 0;
+  gap: 9px;
   padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
 }
 
 .brand-mark {
-  font-weight: 800;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  padding: 4px 7px;
-  border-radius: 8px;
+  padding: 4px 8px;
+  border-radius: 9px;
   background: var(--warm);
   color: #2a0010;
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 1px;
+  transform: rotate(-4deg);
 }
 
 .brand-name {
   font-weight: 800;
-  font-size: 1.02rem;
   white-space: nowrap;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .progress-badge {
-  font-weight: 800;
-  font-size: 0.95rem;
-  color: var(--gold);
-  background: #241b4a;
-  border: 0;
   padding: 5px 11px;
+  border: 0;
   border-radius: 999px;
-  cursor: pointer;
+  background: #241b4a;
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 0.92rem;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .lang-pill {
   display: inline-flex;
   gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 800;
   padding: 6px 10px;
-  border-radius: 999px;
   border: 1px solid var(--line2);
+  border-radius: 999px;
   background: var(--card2);
+  font-size: 0.74rem;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -158,43 +199,55 @@ strong {
   color: var(--mute);
 }
 
+.avatar-btn,
 .icon-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--line2);
   background: var(--card2);
+  cursor: pointer;
+}
+
+.avatar-btn {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.icon-btn {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3px;
-  cursor: pointer;
 }
 
 .icon-btn span {
-  display: block;
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: var(--dim);
 }
 
-@media (max-width: 430px) {
+@media (max-width: 440px) {
   .brand-name {
     display: none;
   }
 }
 
-/* ---------------- menu ---------------- */
+/* ================================================================ */
+/* Menu                                                              */
+/* ================================================================ */
 
 .menu {
   position: fixed;
   inset: 0;
-  z-index: 40;
-  background: rgba(5, 5, 14, 0.6);
+  z-index: 50;
   display: flex;
   justify-content: flex-end;
+  background: rgba(5, 5, 14, 0.6);
 }
 
 .menu[hidden] {
@@ -202,14 +255,14 @@ strong {
 }
 
 .menu-sheet {
-  width: min(320px, 86vw);
-  height: 100%;
-  background: var(--bg2);
-  border-left: 1px solid var(--line2);
-  padding: 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  width: min(320px, 86vw);
+  height: 100%;
+  padding: 24px 18px;
+  background: var(--bg2);
+  border-left: 1px solid var(--line2);
   animation: slide 0.22s ease;
 }
 
@@ -221,27 +274,32 @@ strong {
 }
 
 .menu-title {
-  margin: 0 0 10px;
-  font-size: 0.75rem;
+  margin: 0 0 12px;
+  color: var(--mute);
+  font-size: 0.74rem;
+  font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--mute);
-  font-weight: 800;
 }
 
 .menu-item {
-  text-align: left;
-  font-size: 1.15rem;
-  font-weight: 800;
   padding: 12px 10px;
-  border-radius: 12px;
   border: 0;
+  border-radius: 12px;
   background: none;
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: 800;
   cursor: pointer;
 }
 
-.menu-item:hover {
+.menu-item:hover,
+.menu-item.is-on {
   background: var(--card2);
+}
+
+.menu-item.is-on {
+  color: var(--gold);
 }
 
 .menu-row {
@@ -254,28 +312,35 @@ strong {
 
 .menu-demo {
   margin-top: auto;
-  font-size: 0.85rem;
   color: var(--mute);
+  font-size: 0.85rem;
 }
 
-/* ---------------- demo lišta ---------------- */
+.menu-by {
+  margin: 8px 10px 0;
+  color: var(--mute);
+  font-size: 0.75rem;
+}
+
+/* ================================================================ */
+/* Demo lišta                                                        */
+/* ================================================================ */
 
 .demo-bar {
-  position: relative;
   z-index: 80;
+  padding: 8px 12px;
   background: repeating-linear-gradient(45deg, #2a1133, #2a1133 12px, #35163f 12px, #35163f 24px);
   border-bottom: 2px solid var(--pink);
-  padding: 8px 12px;
 }
 
 .demo-label {
   display: block;
-  font-size: 0.68rem;
+  margin-bottom: 6px;
+  color: var(--pink);
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--pink);
-  margin-bottom: 6px;
 }
 
 .demo-btns {
@@ -285,41 +350,43 @@ strong {
 }
 
 .demo-btn {
-  font-size: 0.78rem;
   padding: 6px 9px;
-  border-radius: 9px;
   border: 1px solid var(--pink);
+  border-radius: 9px;
   background: var(--card2);
+  font-size: 0.78rem;
   cursor: pointer;
 }
 
-/* ---------------- layout ---------------- */
+/* ================================================================ */
+/* Layout                                                            */
+/* ================================================================ */
 
 .app {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 18px 18px 30px;
+  padding: 18px 18px 26px;
 }
 
 .screen {
-  animation: fade 0.25s ease;
+  animation: fade 0.28s ease;
 }
 
 @keyframes fade {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
 }
 
 .screen-head {
-  margin: 6px 0 18px;
+  margin: 8px 0 18px;
 }
 
 .h1 {
   margin: 0;
-  font-size: clamp(1.9rem, 8vw, 2.3rem);
-  line-height: 1.1;
+  font-size: clamp(2rem, 8.5vw, 2.5rem);
+  line-height: 1.05;
   font-weight: 800;
 }
 
@@ -329,46 +396,48 @@ strong {
 }
 
 .lead {
+  margin: 12px 0 0;
   color: var(--ink2);
-  margin: 10px 0 0;
 }
 
 .kicker {
-  margin: 22px 0 10px;
+  margin: 24px 0 10px;
+  color: var(--dim);
   font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--dim);
 }
 
 .foot-note {
-  text-align: center;
+  margin: 26px 0 0;
   color: var(--mute);
   font-size: 0.85rem;
-  margin: 26px 0 0;
+  text-align: center;
 }
 
 .footer {
-  text-align: center;
+  padding: 6px 0 30px;
   color: var(--mute);
   font-size: 0.78rem;
-  padding: 10px 0 30px;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .footer p {
   margin: 0;
 }
 
-/* ---------------- karty ---------------- */
+/* ================================================================ */
+/* Karty                                                             */
+/* ================================================================ */
 
 .card {
+  margin: 14px 0;
+  padding: 16px 18px;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 16px 18px;
-  margin: 14px 0;
 }
 
 .card p {
@@ -379,17 +448,18 @@ strong {
   margin-top: 8px;
 }
 
-.card-soft {
-  background: #13132a;
+.card-soft,
+.card-about {
+  background: var(--card3);
 }
 
 .card-kicker {
   margin: 0 0 8px !important;
+  color: var(--dim);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 1.6px;
   text-transform: uppercase;
-  color: var(--dim);
 }
 
 .card-kicker.pink {
@@ -408,14 +478,24 @@ strong {
   color: var(--green);
 }
 
-.card-about {
-  background: #13132a;
-}
-
 .card-perl {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(150deg, #3a2460, #1b1b36);
   border-color: #4a3a7a;
-  box-shadow: 0 10px 30px rgba(255, 93, 143, 0.1);
+  box-shadow: 0 12px 34px rgba(255, 93, 143, 0.12);
+}
+
+.card-perl::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 93, 143, 0.22), transparent 70%);
+  pointer-events: none;
 }
 
 .perl-text {
@@ -425,6 +505,7 @@ strong {
 .card-challenge {
   background: #221a06;
   border-color: var(--gold);
+  box-shadow: 0 10px 30px rgba(255, 209, 102, 0.08);
 }
 
 .challenge-text {
@@ -445,12 +526,19 @@ strong {
 }
 
 .card-held {
-  opacity: 0.8;
+  opacity: 0.82;
 }
 
 .card-preview {
-  border: 1px dashed var(--pink);
   background: #1a0f22;
+  border: 1px dashed var(--pink);
+  animation: glowPink 1.6s ease-in-out infinite;
+}
+
+@keyframes glowPink {
+  50% {
+    box-shadow: 0 0 26px rgba(255, 93, 143, 0.28);
+  }
 }
 
 .preview-zone {
@@ -478,19 +566,21 @@ strong {
   font-weight: 800;
 }
 
-/* ---------------- tlačítka ---------------- */
+/* ================================================================ */
+/* Tlačítka a vstupy                                                 */
+/* ================================================================ */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 12px 18px;
   border: 0;
   border-radius: 14px;
-  padding: 12px 18px;
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.08s ease;
+  transition: transform 0.08s ease, filter 0.15s ease;
 }
 
 .btn:active {
@@ -500,6 +590,11 @@ strong {
 .btn-primary {
   background: var(--warm);
   color: #2a0010;
+  box-shadow: 0 10px 28px rgba(255, 93, 143, 0.25);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.06);
 }
 
 .btn-ghost {
@@ -514,15 +609,15 @@ strong {
 }
 
 .btn-big {
-  font-size: 1.2rem;
   padding: 17px 24px;
   border-radius: 16px;
+  font-size: 1.2rem;
 }
 
 .btn-small {
   padding: 8px 12px;
-  font-size: 0.85rem;
   border-radius: 10px;
+  font-size: 0.84rem;
 }
 
 .btn-block {
@@ -541,7 +636,47 @@ strong {
   flex: 1 1 140px;
 }
 
-/* ---------------- flip countdown ---------------- */
+.input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  background: #0f0f22;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.input:focus,
+.code-area:focus {
+  outline: 2px solid var(--pink);
+  outline-offset: 1px;
+}
+
+.input-code {
+  padding: 10px 12px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.code-area {
+  width: 100%;
+  min-height: 90px;
+  margin: 12px 0 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: #0f0f22;
+  color: var(--ink);
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  resize: vertical;
+}
+
+/* ================================================================ */
+/* Flip odpočet                                                      */
+/* ================================================================ */
 
 .tiles {
   display: flex;
@@ -550,14 +685,14 @@ strong {
 
 .tile {
   position: relative;
-  flex: 0 0 auto;
   min-width: 78px;
   padding: 10px 10px 8px;
-  border-radius: 14px;
-  background: #101024;
   border: 1px solid var(--line2);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #14142c 0%, #14142c 49%, #0e0e22 51%, #0e0e22 100%);
   text-align: center;
-  box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.25), 0 6px 16px rgba(0, 0, 0, 0.3);
+  perspective: 300px;
 }
 
 .tile::after {
@@ -565,53 +700,72 @@ strong {
   position: absolute;
   left: 0;
   right: 0;
-  top: 46%;
+  top: 44%;
   height: 2px;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .tile-num {
   display: block;
-  font-size: 2.6rem;
-  line-height: 1;
-  font-weight: 800;
   color: var(--gold);
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
+  transform-origin: 50% 46%;
+}
+
+.tile.flip .tile-num {
+  animation: flip 0.45s ease;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateX(-80deg);
+    opacity: 0.3;
+  }
+  60% {
+    transform: rotateX(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0);
+  }
 }
 
 .tile-label {
   display: block;
   margin-top: 6px;
-  font-size: 0.68rem;
+  color: var(--mute);
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 1.5px;
-  color: var(--mute);
 }
 
 .tiles-xl .tile {
-  min-width: 96px;
+  min-width: 98px;
   padding: 16px 12px 10px;
 }
 
 .tiles-xl .tile-num {
-  font-size: clamp(2.8rem, 13vw, 3.8rem);
+  font-size: clamp(2.8rem, 13vw, 3.9rem);
 }
 
-/* odpočet úplně nahoře, sticky */
+/* sticky odpočet úplně nahoře */
 .top-cd {
   position: sticky;
-  top: 57px;
+  top: calc(var(--top) + 8px);
   z-index: 10;
   display: flex;
-  gap: 12px;
   align-items: stretch;
   justify-content: space-between;
-  margin: -6px -6px 14px;
+  gap: 12px;
+  margin: -6px -6px 16px;
   padding: 12px;
-  border-radius: var(--radius);
-  background: linear-gradient(160deg, rgba(36, 27, 74, 0.96), rgba(21, 21, 43, 0.96));
   border: 1px solid var(--line2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(36, 27, 74, 0.97), rgba(21, 21, 43, 0.97));
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
 .top-cd .kicker {
@@ -628,13 +782,13 @@ strong {
 }
 
 .map-chip {
-  flex: 0 0 132px;
   display: flex;
+  flex: 0 0 132px;
   flex-direction: column;
   gap: 4px;
   padding: 8px;
-  border-radius: 14px;
   border: 1px solid var(--line2);
+  border-radius: 14px;
   background: #0c1226;
   cursor: pointer;
 }
@@ -643,11 +797,11 @@ strong {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.66rem;
+  color: var(--dim);
+  font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--dim);
 }
 
 .lupa {
@@ -658,7 +812,199 @@ strong {
   stroke-width: 2.4;
 }
 
-/* ---------------- obrazovka zóny ---------------- */
+/* ================================================================ */
+/* Úvod                                                              */
+/* ================================================================ */
+
+.intro-hero {
+  position: relative;
+  padding: 26px 0 4px;
+}
+
+.sticker {
+  position: absolute;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.sticker-a {
+  top: 6px;
+  right: 6px;
+  background: var(--gold);
+  color: #2a1a00;
+  transform: rotate(8deg);
+}
+
+.sticker-b {
+  top: 44px;
+  right: 46px;
+  background: var(--card2);
+  border: 1px solid var(--line2);
+  color: var(--dim);
+  transform: rotate(-5deg);
+}
+
+.wordmark {
+  margin: 0;
+  font-weight: 800;
+  line-height: 1.02;
+}
+
+.wordmark span {
+  display: block;
+}
+
+.wordmark .w1 {
+  font-size: clamp(2.2rem, 10vw, 2.9rem);
+}
+
+.wordmark .w2 {
+  margin: 4px 0;
+  font-size: clamp(3rem, 14.5vw, 4.3rem);
+  background: var(--warm);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transform: rotate(-2.5deg);
+  transform-origin: left;
+}
+
+.wordmark .w3 {
+  color: var(--gold);
+  font-size: clamp(2.2rem, 10vw, 2.9rem);
+}
+
+.phase-note {
+  margin: 22px 0 0;
+  color: var(--pink);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.email-block {
+  margin: 24px 0 0;
+}
+
+.email-kicker {
+  margin: 0 0 8px;
+  color: var(--dim);
+}
+
+.email-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.email-ok {
+  min-height: 1.2em;
+  margin: 8px 0 0;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.how {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.how-card {
+  padding: 14px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.how-2 {
+  transform: translateY(8px);
+}
+
+.num-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--warm);
+  color: #2a0010;
+  font-weight: 800;
+}
+
+.how-title {
+  margin: 10px 0 4px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.how-desc {
+  margin: 0;
+  color: var(--mute);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 440px) {
+  .how {
+    grid-template-columns: 1fr;
+  }
+  .how-2 {
+    transform: none;
+  }
+  .how-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 12px;
+  }
+  .how-title {
+    margin: 0;
+  }
+  .how-desc {
+    grid-column: 2;
+  }
+  .sticker-b {
+    display: none;
+  }
+}
+
+/* ================================================================ */
+/* Pravidla                                                          */
+/* ================================================================ */
+
+.rule {
+  display: flex;
+  gap: 14px;
+  margin: 12px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.rule-title {
+  margin: 4px 0;
+  font-weight: 800;
+}
+
+.rule-desc {
+  margin: 0;
+  color: var(--ink2);
+}
+
+.rule-extra {
+  margin: 4px 0 0;
+  color: #ffb3c7;
+}
+
+/* ================================================================ */
+/* Obrazovka zóny                                                    */
+/* ================================================================ */
 
 .zone-head {
   margin: 6px 0 4px;
@@ -666,8 +1012,8 @@ strong {
 
 .zone-time {
   margin: 0;
-  font-weight: 700;
   color: var(--dim);
+  font-weight: 700;
 }
 
 .zone-time .dim {
@@ -676,20 +1022,36 @@ strong {
 
 .zone-label {
   margin: 2px 0 8px;
-  font-size: clamp(2.2rem, 11vw, 3.1rem);
-  line-height: 1.02;
+  font-size: clamp(2.3rem, 11.5vw, 3.2rem);
   font-weight: 800;
+  line-height: 1.02;
+}
+
+.zone-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .badge-mega {
-  display: inline-block;
   padding: 4px 14px;
   border-radius: 999px;
   background: var(--warm);
   color: #2a0010;
-  font-weight: 800;
   font-size: 0.85rem;
+  font-weight: 800;
   letter-spacing: 1px;
+  transform: rotate(-3deg);
+}
+
+.badge-step {
+  padding: 4px 12px;
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  background: var(--card2);
+  color: var(--dim);
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
 .now-flash {
@@ -710,7 +1072,7 @@ strong {
 }
 
 .pause-tag {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--green);
   font-weight: 800;
 }
@@ -723,14 +1085,14 @@ strong {
 
 .held-hint {
   margin: 10px 0 0;
-  font-size: 0.88rem;
   color: var(--dim);
+  font-size: 0.88rem;
   font-style: italic;
 }
 
 .checkin {
-  text-align: center;
   margin: 6px 0 4px;
+  text-align: center;
 }
 
 .checkin-micro {
@@ -739,8 +1101,15 @@ strong {
   font-size: 0.92rem;
 }
 
-.checkin-note {
+.checkin-for {
   margin: 8px 0 0;
+  color: var(--green);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.checkin-note {
+  margin: 6px 0 0;
   color: var(--mute);
   font-size: 0.8rem;
 }
@@ -754,32 +1123,32 @@ strong {
 
 .fact-kicker {
   margin: 0 0 4px;
-  font-size: 0.66rem;
+  color: #55557a;
+  font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 1.8px;
   text-transform: uppercase;
-  color: #55557a;
 }
 
 .fact-text {
   margin: 0;
+  color: #8a8aa8;
   font-size: 0.9rem;
   font-style: italic;
-  color: #8a8aa8;
 }
 
 .next-prep {
   margin: 18px 0 8px;
   padding: 14px 16px;
+  border: 1px dashed var(--line2);
   border-radius: var(--radius);
   background: var(--card);
-  border: 1px dashed var(--line2);
 }
 
 .next-prep-zone {
   margin: 0 0 4px;
-  font-size: 0.88rem;
   color: var(--dim);
+  font-size: 0.88rem;
 }
 
 .next-prep-zone strong {
@@ -793,174 +1162,14 @@ strong {
 
 .counter-note {
   margin: 16px 0 0;
-  text-align: center;
+  color: var(--mute);
   font-size: 0.8rem;
-  color: var(--mute);
+  text-align: center;
 }
 
-/* ---------------- úvod ---------------- */
-
-.intro-hero {
-  padding: 18px 0 4px;
-}
-
-.wordmark {
-  margin: 0;
-  line-height: 1.02;
-  font-weight: 800;
-}
-
-.wordmark span {
-  display: block;
-}
-
-.wordmark .w1 {
-  font-size: clamp(2.1rem, 10vw, 2.8rem);
-}
-
-.wordmark .w2 {
-  font-size: clamp(2.9rem, 14vw, 4.1rem);
-  background: var(--warm);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  transform: rotate(-2deg);
-  transform-origin: left;
-  margin: 2px 0;
-}
-
-.wordmark .w3 {
-  font-size: clamp(2.1rem, 10vw, 2.8rem);
-  color: var(--gold);
-}
-
-.phase-note {
-  margin: 22px 0 0;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--pink);
-}
-
-.email-block {
-  margin: 22px 0 0;
-}
-
-.email-kicker {
-  margin: 0 0 8px;
-  color: var(--dim);
-}
-
-.email-form {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.email-input,
-.code-input {
-  flex: 1 1 200px;
-  min-width: 0;
-  padding: 13px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--line2);
-  background: #0f0f22;
-  color: var(--ink);
-  font-size: 1rem;
-  font-family: inherit;
-}
-
-.email-ok {
-  margin: 8px 0 0;
-  color: var(--green);
-  font-weight: 700;
-  min-height: 1.2em;
-}
-
-.how {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.how-card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px 12px;
-}
-
-.num-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--warm);
-  color: #2a0010;
-  font-weight: 800;
-  flex: 0 0 auto;
-}
-
-.how-title {
-  margin: 10px 0 4px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.how-desc {
-  margin: 0;
-  color: var(--mute);
-  font-size: 0.82rem;
-  line-height: 1.35;
-}
-
-@media (max-width: 420px) {
-  .how {
-    grid-template-columns: 1fr;
-  }
-  .how-card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 12px;
-    align-items: center;
-  }
-  .how-title {
-    margin: 0;
-  }
-  .how-desc {
-    grid-column: 2;
-  }
-}
-
-/* ---------------- pravidla ---------------- */
-
-.rule {
-  display: flex;
-  gap: 14px;
-  padding: 16px;
-  margin: 12px 0;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
-.rule-title {
-  margin: 4px 0 4px;
-  font-weight: 800;
-}
-
-.rule-desc {
-  margin: 0;
-  color: var(--ink2);
-}
-
-.rule-extra {
-  margin: 4px 0 0;
-  color: #ffb3c7;
-}
-
-/* ---------------- velké odpočítávání ---------------- */
+/* ================================================================ */
+/* Velké odpočítávání                                                */
+/* ================================================================ */
 
 .big-cd {
   position: fixed;
@@ -969,8 +1178,9 @@ strong {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
   padding: 24px;
-  background: radial-gradient(circle at 50% 40%, #3a1830 0%, #0a0618 70%);
+  background: radial-gradient(circle at 50% 38%, #3a1830 0%, #0a0618 72%);
   cursor: pointer;
 }
 
@@ -986,33 +1196,44 @@ strong {
 
 .big-kicker {
   margin: 0 0 18px;
+  color: var(--pink);
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--pink);
 }
 
 .big-ring {
-  width: min(78vw, 360px);
-  height: min(78vw, 360px);
-  margin: 0 auto;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 93, 143, 0.35);
-  box-shadow: 0 0 0 26px rgba(255, 209, 102, 0.05), 0 0 80px rgba(255, 93, 143, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: min(78vw, 360px);
+  height: min(78vw, 360px);
+  margin: 0 auto;
+  border: 3px solid rgba(255, 93, 143, 0.4);
+  border-radius: 50%;
+  box-shadow: 0 0 0 26px rgba(255, 209, 102, 0.05), 0 0 90px rgba(255, 93, 143, 0.28);
+  animation: ring 1s ease-in-out infinite;
+}
+
+@keyframes ring {
+  50% {
+    box-shadow: 0 0 0 34px rgba(255, 209, 102, 0.07), 0 0 120px rgba(255, 93, 143, 0.4);
+  }
+}
+
+.big-ring-now {
+  border-color: var(--gold);
 }
 
 .big-num {
-  font-size: min(48vw, 230px);
-  line-height: 1;
-  font-weight: 800;
   background: var(--warm);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-size: min(48vw, 230px);
+  font-weight: 800;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   animation: pop 0.9s ease;
 }
@@ -1039,13 +1260,13 @@ strong {
 }
 
 .big-card {
-  margin: 22px auto 0;
   max-width: 420px;
-  text-align: left;
-  background: var(--card);
+  margin: 22px auto 0;
+  padding: 14px 18px;
   border: 1px solid var(--line2);
   border-radius: var(--radius);
-  padding: 14px 18px;
+  background: var(--card);
+  text-align: left;
 }
 
 .big-card p {
@@ -1058,7 +1279,9 @@ strong {
   font-size: 0.8rem;
 }
 
-/* ---------------- mapa (náčrt) ---------------- */
+/* ================================================================ */
+/* Mapa (náčrt)                                                      */
+/* ================================================================ */
 
 .map-svg {
   display: block;
@@ -1117,9 +1340,9 @@ strong {
 
 .map-label {
   fill: var(--pink);
+  font-family: var(--font);
   font-size: 6px;
   font-weight: 800;
-  font-family: var(--font);
   paint-order: stroke;
   stroke: #0c1226;
   stroke-width: 1.6px;
@@ -1133,8 +1356,8 @@ strong {
   position: relative;
   height: 340px;
   overflow: hidden;
-  border-radius: var(--radius);
   border: 1px solid #2a3358;
+  border-radius: var(--radius);
   background: #0c1226;
   touch-action: none;
   cursor: grab;
@@ -1155,8 +1378,8 @@ strong {
 
 .map-ctrls {
   position: absolute;
-  right: 10px;
   top: 10px;
+  right: 10px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1166,8 +1389,8 @@ strong {
   min-width: 40px;
   height: 40px;
   padding: 0 10px;
-  border-radius: 10px;
   border: 1px solid var(--line2);
+  border-radius: 10px;
   background: rgba(27, 27, 54, 0.92);
   font-size: 1.2rem;
   font-weight: 800;
@@ -1183,16 +1406,16 @@ strong {
   flex-wrap: wrap;
   gap: 8px 18px;
   margin: 12px 0 0;
-  font-size: 0.88rem;
   color: var(--dim);
+  font-size: 0.88rem;
 }
 
 .lg {
   display: inline-block;
   width: 12px;
   height: 12px;
-  border-radius: 50%;
   margin-right: 7px;
+  border-radius: 50%;
   vertical-align: -1px;
 }
 
@@ -1210,8 +1433,8 @@ strong {
 
 .map-note {
   margin: 8px 0 0;
-  font-size: 0.78rem;
   color: var(--mute);
+  font-size: 0.78rem;
   font-style: italic;
 }
 
@@ -1226,9 +1449,9 @@ strong {
   justify-content: space-between;
   gap: 10px;
   padding: 14px 16px;
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card);
-  border: 1px solid var(--line);
 }
 
 .up-row-now {
@@ -1248,27 +1471,33 @@ strong {
   white-space: nowrap;
 }
 
-/* ---------------- profil ---------------- */
+/* ================================================================ */
+/* Profil a parta                                                    */
+/* ================================================================ */
 
 .avatar {
-  flex: 0 0 auto;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  background: #241b4a;
+  width: 60px;
+  height: 60px;
   border: 1px solid #4a3a7a;
+  border-radius: 50%;
+  background: #241b4a;
   color: var(--gold);
-  font-weight: 800;
   font-size: 1.6rem;
+  font-weight: 800;
 }
 
 .avatar-sm {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   font-size: 1rem;
+}
+
+.avatar-holder {
+  border-color: var(--gold);
 }
 
 .acc-card {
@@ -1287,38 +1516,106 @@ strong {
   font-weight: 800;
 }
 
-.acc-list {
+.crew-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.acc-row {
+.crew-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 10px 10px 10px 12px;
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card);
-  border: 1px solid var(--line);
+  opacity: 0.7;
 }
 
-.acc-me {
-  border-color: var(--line2);
+.crew-row.is-here {
+  opacity: 1;
+  border-color: #2f6f52;
 }
 
-.acc-name {
+.crew-main {
   flex: 1;
   min-width: 0;
+}
+
+.crew-name {
+  margin: 0;
   overflow: hidden;
+  font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.acc-count {
-  color: var(--green);
+.crew-sub {
+  margin: 0;
+  color: var(--mute);
+  font-size: 0.8rem;
+}
+
+.chip-toggle {
+  padding: 6px 10px;
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  background: var(--card2);
+  color: var(--mute);
+  font-size: 0.78rem;
   font-weight: 800;
-  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip-toggle.on {
+  background: #163a2a;
+  border-color: #2f6f52;
+  color: var(--green);
+}
+
+.icon-del {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--mute);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-del:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+@media (max-width: 400px) {
+  .crew-row .btn-small {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+}
+
+.btn-danger {
+  background: var(--pink);
+  color: #2a0010;
+}
+
+.name-form {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+}
+
+.name-form .input {
+  padding: 10px 12px;
+}
+
+.crew-new {
+  margin-top: 8px;
 }
 
 .invite-row {
@@ -1327,37 +1624,19 @@ strong {
   margin: 12px 0 8px;
 }
 
-.code-input {
-  font-family: ui-monospace, monospace;
-  font-size: 0.82rem;
-  padding: 10px 12px;
-}
-
-.code-area {
-  width: 100%;
-  min-height: 90px;
-  margin: 12px 0 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--line2);
-  background: #0f0f22;
-  color: var(--ink);
-  font-family: ui-monospace, monospace;
-  font-size: 0.78rem;
-  resize: vertical;
-}
-
 .backup-msg {
   margin-top: 10px !important;
   color: var(--green);
   font-weight: 700;
 }
 
-/* ---------------- konec noci ---------------- */
+/* ================================================================ */
+/* Konec noci                                                        */
+/* ================================================================ */
 
 .end {
-  text-align: center;
   padding-top: 10px;
+  text-align: center;
 }
 
 .end-done {
@@ -1368,20 +1647,20 @@ strong {
 
 .end-num {
   margin: 0;
-  font-size: clamp(7rem, 40vw, 11rem);
-  line-height: 1;
-  font-weight: 800;
   background: var(--warm);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  font-size: clamp(7rem, 40vw, 11rem);
+  font-weight: 800;
+  line-height: 1;
 }
 
 .end-of {
   margin: 0;
+  color: var(--ink2);
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--ink2);
 }
 
 .end-line {
@@ -1391,12 +1670,12 @@ strong {
 }
 
 .disclaimer {
+  max-width: 440px;
   margin: 18px auto 0;
   padding: 12px;
-  max-width: 440px;
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: #16162c;
-  border: 1px solid var(--line);
   color: var(--dim);
   font-size: 0.85rem;
 }
@@ -1405,23 +1684,34 @@ strong {
   text-align: left;
 }
 
-/* ---------------- toast ---------------- */
+/* ================================================================ */
+/* Toast                                                             */
+/* ================================================================ */
 
 .toast {
   position: fixed;
   left: 50%;
   bottom: 24px;
-  transform: translateX(-50%);
   z-index: 70;
   max-width: 90vw;
   padding: 12px 18px;
+  border: 1px solid var(--line2);
   border-radius: 14px;
   background: var(--card2);
-  border: 1px solid var(--line2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   font-weight: 700;
+  transform: translateX(-50%);
 }
 
 .toast[hidden] {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

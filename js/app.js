@@ -1,17 +1,17 @@
 /**
- * app.js, router, stav a vykreslování New Year Bundle PWA (fáze 1).
+ * app.js, New Year Bundle PWA (fáze 1), přepsáno od základu podle
+ * schválených návrhů (design/*.png).
  *
- * Vanilla ES moduly, žádný framework, žádný build. Data jsou v zones.js,
- * čas a demo mód v time.js.
+ * Mechanika noci:
+ * - AKTIVNÍ ÚKOL je poslední zóna s akcí (celebrates a challenge). Info zóny
+ *   (pauzy) úkol neposouvají, jen přidají kontext.
+ * - Odpočet míří vždy na nejbližší další zónu.
+ * - 5 minut předem náhled výzvy, posledních 10 vteřin velké odpočítávání přes
+ *   celý displej, pak "TEĎ!".
+ * - Check-in se zapíše všem účtům, které jsou na tomhle mobilu "u toho".
  *
- * Mechanika noci: AKTIVNÍ ÚKOL je poslední zóna, co nese akci (celebrates a
- * challenge). Info zóny (pauzy) úkol neposouvají, jen přidají kontext. Odpočet
- * vždy míří na nejbližší další zónu. 5 minut předem se ukáže náhled výzvy,
- * posledních 10 vteřin jede velké odpočítávání přes celý displej.
- *
- * Výkon: obrazovka se překreslí jen když se změní její "klíč" (jiná zóna,
- * jiný jazyk, nový check-in...). Každý tik se aktualizují jen čísla odpočtu,
- * takže tlačítka neblikají a kliky se neztrácí.
+ * Výkon: obrazovka se překreslí jen když se změní její klíč. Každý tik se
+ * mění jen číslice odpočtu (s překlopením), takže nic nebliká.
  */
 
 import ZONES from "./zones.js";
@@ -20,6 +20,7 @@ import { t, zf, getLang, setLang } from "./i18n.js";
 import * as P from "./profiles.js";
 import { mapSvg, zonePoint, MAP_VIEWBOX } from "./map.js";
 import { shareCard } from "./share.js";
+import { initFx, burst, setFxLevel } from "./fx.js";
 import {
   getEffectiveTime,
   isDemoActive,
@@ -34,14 +35,14 @@ import {
   formatCzDate,
 } from "./time.js";
 
-/* ------------------------------------------------------------------ */
-/* Laditelné konstanty                                                  */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Konstanty                                                            */
+/* ================================================================== */
 
-const CHALLENGE_PREVIEW_MINUTES = 5; // náhled výzvy předem
-const NOW_FLASH_SECONDS = 90; // jak dlouho svítí štítek TEĎ u zóny
-const BIG_COUNTDOWN_SECONDS = 10; // velké 10 9 8 přes celý displej
-const BIG_NOW_SECONDS = 4; // jak dlouho po půlnoci svítí velké TEĎ!
+const CHALLENGE_PREVIEW_MINUTES = 5;
+const NOW_FLASH_SECONDS = 90;
+const BIG_COUNTDOWN_SECONDS = 10;
+const BIG_NOW_SECONDS = 4;
 const INSTAGRAM_URL = "https://instagram.com/"; // reálný handle TBD
 
 const ZONE_STARTS = computeStarts(ZONES);
@@ -54,24 +55,24 @@ const LS = {
   email: "nyb_email",
 };
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Drobnosti                                                            */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const pad = (n) => String(n).padStart(2, "0");
 
-function flag(key) {
+function flag(k) {
   try {
-    return localStorage.getItem(key) === "1";
+    return localStorage.getItem(k) === "1";
   } catch (e) {
     return false;
   }
 }
-function setFlag(key) {
+function setFlag(k) {
   try {
-    localStorage.setItem(key, "1");
+    localStorage.setItem(k, "1");
   } catch (e) {
     /* ignore */
   }
@@ -85,38 +86,29 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-// Text ze zones.js může mít **tučné** úseky.
+/** Texty ze zones.js můžou mít **tučné** úseky. */
 function md(s) {
   return esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 }
 
-function isActionZone(zone) {
-  return !!(zone && zone.celebrates === true && zone.challenge != null);
-}
-
-function displayName(p) {
-  return (p && p.name) || t("profile.defaultName");
-}
-
-function initial(p) {
-  return displayName(p).trim().charAt(0).toUpperCase() || "?";
-}
+const isAction = (z) => !!(z && z.celebrates === true && z.challenge != null);
+const nameOf = (p) => (p && p.name) || t("profile.defaultName");
+const initialOf = (p) => nameOf(p).trim().charAt(0).toUpperCase() || "?";
 
 let toastTimer = null;
 function toast(msg) {
   const el = $("#toast");
-  if (!el) return;
   el.textContent = msg;
   el.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (el.hidden = true), 3200);
+  toastTimer = setTimeout(() => (el.hidden = true), 3400);
 }
 
-/* ------------------------------------------------------------------ */
-/* Odpočet: dlaždice                                                    */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Flip odpočet                                                         */
+/* ================================================================== */
 
-// Nad hodinu dny / hodiny / minuty, pod hodinu minuty / vteřiny.
+/** Nad hodinu dny / hodiny / minuty, pod hodinu minuty / vteřiny. */
 function cdParts(ms) {
   const total = Math.floor(Math.max(0, ms) / 1000);
   if (total >= 3600) {
@@ -134,10 +126,35 @@ function cdParts(ms) {
 function tilesHtml(ms) {
   return cdParts(ms)
     .map(
-      ([v, l]) =>
-        `<div class="tile"><span class="tile-num">${pad(v)}</span><span class="tile-label">${t(l)}</span></div>`
+      ([v, l]) => `
+      <div class="tile" data-label="${l}">
+        <span class="tile-num">${pad(v)}</span>
+        <span class="tile-label">${t(l)}</span>
+      </div>`
     )
     .join("");
+}
+
+/** Aktualizuje dlaždice na místě. Změněné číslo se překlopí. */
+function updateTiles(el, ms) {
+  const parts = cdParts(ms);
+  const tiles = $$(".tile", el);
+  const sameShape =
+    tiles.length === parts.length && tiles.every((tile, i) => tile.dataset.label === parts[i][1]);
+  if (!sameShape) {
+    el.innerHTML = tilesHtml(ms);
+    return;
+  }
+  parts.forEach(([v], i) => {
+    const num = $(".tile-num", tiles[i]);
+    const text = pad(v);
+    if (num.textContent !== text) {
+      num.textContent = text;
+      tiles[i].classList.remove("flip");
+      void tiles[i].offsetWidth; // restart animace
+      tiles[i].classList.add("flip");
+    }
+  });
 }
 
 function relTime(ms) {
@@ -149,25 +166,20 @@ function relTime(ms) {
   return `${Math.floor(h / 24)} d ${h % 24} h`;
 }
 
-/* ------------------------------------------------------------------ */
-/* Mechanika noci: držení úkolu                                         */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Mechanika noci                                                       */
+/* ================================================================== */
 
-function computeHeldTask(state) {
-  const contextIndex = state.currentZoneIndex;
-  let taskIndex = -1;
-  for (let i = contextIndex; i >= 0; i--) {
-    if (isActionZone(ZONES[i])) {
-      taskIndex = i;
+function heldTask(st) {
+  const ci = st.currentZoneIndex;
+  let ti = -1;
+  for (let i = ci; i >= 0; i--) {
+    if (isAction(ZONES[i])) {
+      ti = i;
       break;
     }
   }
-  return {
-    contextIndex,
-    contextZone: state.currentZone,
-    taskIndex,
-    taskZone: taskIndex >= 0 ? ZONES[taskIndex] : null,
-  };
+  return { ci, cz: st.currentZone, ti, tz: ti >= 0 ? ZONES[ti] : null };
 }
 
 function nextIndex(st) {
@@ -176,9 +188,9 @@ function nextIndex(st) {
   return st.currentZoneIndex + 1 < TOTAL ? st.currentZoneIndex + 1 : -1;
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Náhodná kravina, jedna na načtení                                    */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 const FACT = (() => {
   let last = -1;
@@ -187,35 +199,30 @@ const FACT = (() => {
   } catch (e) {
     /* ignore */
   }
-  let idx = Math.floor(Math.random() * FACTS.length);
-  for (let g = 0; idx === last && FACTS.length > 1 && g < 20; g++) {
-    idx = Math.floor(Math.random() * FACTS.length);
-  }
+  let i = Math.floor(Math.random() * FACTS.length);
+  for (let g = 0; i === last && FACTS.length > 1 && g < 20; g++) i = Math.floor(Math.random() * FACTS.length);
   try {
-    localStorage.setItem(LS.lastFact, String(idx));
+    localStorage.setItem(LS.lastFact, String(i));
   } catch (e) {
     /* ignore */
   }
-  return FACTS[idx];
+  return FACTS[i];
 })();
 
-function factBlock() {
-  return `
-    <div class="fact">
-      <p class="fact-kicker">${t("zone.random")}</p>
-      <p class="fact-text">${esc(FACT)}</p>
-    </div>`;
-}
+const factBlock = () => `
+  <div class="fact">
+    <p class="fact-kicker">${t("zone.random")}</p>
+    <p class="fact-text">${esc(FACT)}</p>
+  </div>`;
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Router                                                               */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
-// "auto" = obrazovka podle hodin (úvod, zóna, konec). Ostatní jsou ruční.
-let route = "auto";
+let route = "auto"; // auto = podle hodin (úvod, zóna, konec)
 let shown = null;
 let lastKey = "";
-let profileRev = 0;
+let rev = 0; // ruční překreslení (profil, záloha...)
 
 function resolveRoute(st) {
   if (route !== "auto") return route;
@@ -235,37 +242,18 @@ function go(to) {
   tick();
 }
 
-function showScreen(name) {
-  $$(".screen").forEach((el) => {
-    el.hidden = el.id !== `screen-${name}`;
-  });
-}
-
 function keyFor(r, st, now) {
-  const base = `${r}|${getLang()}|${P.getActive().id}|${P.progressSet().size}`;
-  switch (r) {
-    case "intro":
-      return `${base}|${st.isBeforeFirstZone ? "b" : st.isAfterLastZone ? "a" : "r"}|${flag(LS.rules)}`;
-    case "zone": {
-      if (st.isBeforeFirstZone) return `${base}|before`;
-      const ni = nextIndex(st);
-      const previewOn =
-        ni >= 0 &&
-        isActionZone(ZONES[ni]) &&
-        st.msUntilNextZone <= CHALLENGE_PREVIEW_MINUTES * 60000;
-      const since = now - ZONE_STARTS[st.currentZoneIndex];
-      const flashOn = since >= 0 && since < NOW_FLASH_SECONDS * 1000;
-      return `${base}|${st.currentZoneIndex}|${previewOn}|${flashOn}`;
-    }
-    case "map":
-      return `${base}|${st.currentZoneIndex}|${st.isBeforeFirstZone}|${Math.floor(st.msUntilNextZone / 60000)}`;
-    case "profile":
-      return `${base}|${profileRev}`;
-    case "end":
-      return base;
-    default:
-      return base;
+  const base = `${r}|${getLang()}|${P.getActive().id}|${P.progressSet().size}|${rev}`;
+  if (r === "intro") return `${base}|${st.isBeforeFirstZone ? "b" : st.isAfterLastZone ? "a" : "r"}`;
+  if (r === "zone") {
+    if (st.isBeforeFirstZone) return `${base}|before`;
+    const ni = nextIndex(st);
+    const prev = ni >= 0 && isAction(ZONES[ni]) && st.msUntilNextZone <= CHALLENGE_PREVIEW_MINUTES * 60000;
+    const since = now - ZONE_STARTS[st.currentZoneIndex];
+    return `${base}|${st.currentZoneIndex}|${prev}|${since >= 0 && since < NOW_FLASH_SECONDS * 1000}`;
   }
+  if (r === "map") return `${base}|${st.currentZoneIndex}|${st.isBeforeFirstZone}|${Math.floor(st.msUntilNextZone / 60000)}`;
+  return base;
 }
 
 const RENDER = {
@@ -287,45 +275,37 @@ function tick() {
 
   const r = resolveRoute(st);
   if (r !== shown) {
-    showScreen(r);
+    $$(".screen").forEach((el) => (el.hidden = el.id !== `screen-${r}`));
     shown = r;
     lastKey = "";
     window.scrollTo(0, 0);
+    setFxLevel(r === "intro" || r === "end" ? 0.55 : 0.18);
   }
   const key = keyFor(r, st, now);
   if (key !== lastKey) {
     RENDER[r](st, now);
     lastKey = key;
   }
-  updateCountdowns(st);
+
+  $$(".js-cd").forEach((el) => updateTiles(el, el.dataset.cd === "first" ? st.msUntilFirstZone : st.msUntilNextZone));
   updateBig(st, now);
 }
 
-function updateCountdowns(st) {
-  $$(".js-cd").forEach((el) => {
-    const ms = el.dataset.cd === "first" ? st.msUntilFirstZone : st.msUntilNextZone;
-    const html = tilesHtml(ms);
-    if (el.dataset.last !== html) {
-      el.innerHTML = html;
-      el.dataset.last = html;
-    }
-  });
-}
-
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Horní lišta, menu, demo                                              */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
-function setText(el, text) {
-  if (el && el.textContent !== text) el.textContent = text;
+function setHtml(el, html) {
+  if (el && el.innerHTML !== html) el.innerHTML = html;
 }
+
+const langPill = () => (getLang() === "cs" ? "<b>CZ</b><span>EN</span>" : "<span>CZ</span><b>EN</b>");
 
 function renderTopbar() {
-  setText($(".js-progress"), `${P.progressSet().size} / ${TOTAL}`);
-  const lang = $(".js-lang");
-  const html = getLang() === "cs" ? "<b>CZ</b><span>EN</span>" : "<span>CZ</span><b>EN</b>";
-  if (lang && lang.innerHTML !== html) lang.innerHTML = html;
-  setText($(".js-by"), t("by"));
+  setHtml($(".js-progress"), `${P.progressSet().size} / ${TOTAL}`);
+  setHtml($(".js-lang"), langPill());
+  setHtml($(".js-avatar"), esc(initialOf(P.getActive())));
+  setHtml($(".js-by"), t("by"));
 }
 
 function openMenu() {
@@ -339,19 +319,15 @@ function openMenu() {
   ];
   $("#menu-sheet").innerHTML = `
     <p class="menu-title">${t("menu.title")}</p>
-    ${items.map(([to, label]) => `<button class="menu-item" data-act="go" data-to="${to}">${label}</button>`).join("")}
-    <div class="menu-row">
-      <span>${t("menu.lang")}</span>
-      <button class="lang-pill" data-act="lang">${getLang() === "cs" ? "<b>CZ</b><span>EN</span>" : "<span>CZ</span><b>EN</b>"}</button>
-    </div>
+    ${items.map(([to, l]) => `<button class="menu-item${shown === to || (to === "zone" && shown === "zone") ? " is-on" : ""}" data-act="go" data-to="${to}">${l}</button>`).join("")}
+    <div class="menu-row"><span>${t("menu.lang")}</span><button class="lang-pill" data-act="lang">${langPill()}</button></div>
     <button class="menu-item menu-demo" data-act="demo-toggle">${isDemoActive() ? t("demo.on") : t("demo.off")}</button>
-  `;
+    <p class="menu-by">${t("by")}</p>`;
   $("#menu").hidden = false;
 }
 
 function closeMenu() {
-  const m = $("#menu");
-  if (m) m.hidden = true;
+  $("#menu").hidden = true;
 }
 
 let demoKey = "";
@@ -365,42 +341,57 @@ function renderDemoBar() {
     bar.innerHTML = "";
     return;
   }
-  const btn = (act, label) => `<button class="demo-btn" data-act="${act}">${label}</button>`;
+  const b = (a, l) => `<button class="demo-btn" data-act="${a}">${l}</button>`;
   bar.innerHTML = `
     <span class="demo-label">${t("demo.label")}</span>
     <div class="demo-btns">
-      ${btn("demo-first", t("demo.first"))}
-      ${btn("demo-prev", t("demo.prev"))}
-      ${btn("demo-next", t("demo.next"))}
-      ${btn("demo-plus1", t("demo.plus1"))}
-      ${btn("demo-plus5", t("demo.plus5"))}
-      ${btn("demo-before", t("demo.before"))}
-      ${btn("demo-end", t("demo.end"))}
-      ${btn("demo-toggle", t("demo.on"))}
+      ${b("demo-first", t("demo.first"))}${b("demo-prev", t("demo.prev"))}${b("demo-next", t("demo.next"))}
+      ${b("demo-plus1", t("demo.plus1"))}${b("demo-plus5", t("demo.plus5"))}${b("demo-before", t("demo.before"))}
+      ${b("demo-end", t("demo.end"))}${b("demo-toggle", t("demo.on"))}
     </div>`;
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Společné kousky                                                      */
+/* ================================================================== */
+
+const emailForm = (k) => `
+  <div class="email-block">
+    <p class="email-kicker">${t(k)}</p>
+    <form class="email-form" data-form="email">
+      <input type="email" required placeholder="${t("email.placeholder")}" class="input" aria-label="email" />
+      <button class="btn btn-ghost" type="submit">${t("email.btn")}</button>
+    </form>
+    <p class="email-ok" aria-live="polite"></p>
+  </div>`;
+
+const head = (title, sub) => `
+  <div class="screen-head">
+    <h1 class="h1">${title}</h1>
+    ${sub ? `<p class="sub">${sub}</p>` : ""}
+  </div>`;
+
+/* ================================================================== */
 /* Úvod / coming soon                                                   */
-/* ------------------------------------------------------------------ */
-
-function emailForm(kickerKey) {
-  return `
-    <div class="email-block">
-      <p class="email-kicker">${t(kickerKey)}</p>
-      <form class="email-form" data-form="email">
-        <input type="email" required placeholder="${t("email.placeholder")}" class="email-input" aria-label="email" />
-        <button class="btn btn-ghost" type="submit">${t("email.btn")}</button>
-      </form>
-      <p class="email-ok" aria-live="polite"></p>
-    </div>`;
-}
+/* ================================================================== */
 
 function renderIntro(st) {
   const phase = st.isBeforeFirstZone ? "before" : st.isAfterLastZone ? "over" : "running";
-  const cta = phase === "before" ? t("intro.cta") : t("intro.ctaRunning");
+  const how = [1, 2, 3]
+    .map(
+      (i) => `
+      <div class="how-card how-${i}">
+        <span class="num-badge">${i}</span>
+        <p class="how-title">${t(`intro.how${i}t`)}</p>
+        <p class="how-desc">${t(`intro.how${i}d`)}</p>
+      </div>`
+    )
+    .join("");
+
   $("#screen-intro").innerHTML = `
     <div class="intro-hero">
+      <span class="sticker sticker-a">25 h</span>
+      <span class="sticker sticker-b">0 % alkoholu letos</span>
       <h1 class="wordmark">
         <span class="w1">${t("intro.l1")}</span>
         <span class="w2">${t("intro.l2")}</span>
@@ -416,66 +407,49 @@ function renderIntro(st) {
         : `<p class="phase-note">${phase === "running" ? t("intro.running") : t("intro.over")}</p>`
     }
 
-    <button class="btn btn-primary btn-big btn-block" data-act="start">${cta}</button>
+    <button class="btn btn-primary btn-big btn-block" data-act="start">${phase === "before" ? t("intro.cta") : t("intro.ctaRunning")}</button>
 
     ${emailForm("email.kicker")}
 
     <p class="kicker">${t("intro.howTitle")}</p>
-    <div class="how">
-      ${[1, 2, 3]
-        .map(
-          (i) => `
-        <div class="how-card">
-          <span class="num-badge">${i}</span>
-          <p class="how-title">${t(`intro.how${i}t`)}</p>
-          <p class="how-desc">${t(`intro.how${i}d`)}</p>
-        </div>`
-        )
-        .join("")}
-    </div>
+    <div class="how">${how}</div>
 
-    <p class="foot-note">${t("intro.foot", { n: TOTAL })}</p>
-  `;
+    <p class="foot-note">${t("intro.foot", { n: TOTAL })}</p>`;
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Pravidla                                                             */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 function renderRules() {
   const rules = [1, 2, 3, 4, 5]
-    .map((i) => {
-      const extra = i === 3 ? `<p class="rule-extra">${t("rules.3x")}</p>` : "";
-      return `
+    .map(
+      (i) => `
       <div class="rule">
         <span class="num-badge">${i}</span>
         <div>
           <p class="rule-title">${t(`rules.${i}t`, { n: TOTAL })}</p>
           <p class="rule-desc">${t(`rules.${i}d`, { n: TOTAL, m: CHALLENGE_PREVIEW_MINUTES })}</p>
-          ${extra}
+          ${i === 3 ? `<p class="rule-extra">${t("rules.3x")}</p>` : ""}
         </div>
-      </div>`;
-    })
+      </div>`
+    )
     .join("");
 
   $("#screen-rules").innerHTML = `
-    <div class="screen-head">
-      <h1 class="h1">${t("rules.title")}</h1>
-      <p class="sub">${t("rules.sub")}</p>
-    </div>
+    ${head(t("rules.title"), t("rules.sub"))}
     ${rules}
     <div class="card card-green">
       <p class="card-kicker green">${t("rules.pauseT")}</p>
       <p>${t("rules.pauseD")}</p>
     </div>
     <button class="btn btn-primary btn-big btn-block" data-act="rules-done">${t("rules.cta")}</button>
-    <p class="foot-note">${t("rules.foot")}</p>
-  `;
+    <p class="foot-note">${t("rules.foot")}</p>`;
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Obrazovka zóny                                                       */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 const LUPA = `<svg class="lupa" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"></circle><line x1="15" y1="15" x2="21" y2="21"></line></svg>`;
 
@@ -486,21 +460,15 @@ function topCountdown(st, activeId) {
       <span class="map-chip-label">${t("zone.mapChip")} ${LUPA}</span>
       ${mapSvg({ zones: ZONES, activeId, doneIds: P.progressSet(), mini: true })}
     </button>`;
-  if (ni < 0) {
-    return `<div class="top-cd"><div class="top-cd-main"><p class="kicker">${t("zone.last")}</p></div>${chip}</div>`;
-  }
-  const label = st.isBeforeFirstZone ? t("zone.firstIn") : t("zone.nextIn");
-  return `
-    <div class="top-cd">
-      <div class="top-cd-main">
-        <p class="kicker">${label}</p>
-        <div class="tiles js-cd" data-cd="next">${tilesHtml(st.msUntilNextZone)}</div>
-      </div>
-      ${chip}
-    </div>`;
+  const main =
+    ni < 0
+      ? `<p class="kicker">${t("zone.last")}</p>`
+      : `<p class="kicker">${st.isBeforeFirstZone ? t("zone.firstIn") : t("zone.nextIn")}</p>
+         <div class="tiles js-cd" data-cd="next">${tilesHtml(st.msUntilNextZone)}</div>`;
+  return `<div class="top-cd"><div class="top-cd-main">${main}</div>${chip}</div>`;
 }
 
-function nextPrepCard(st) {
+function nextPrep(st) {
   const ni = nextIndex(st);
   if (ni < 0) return "";
   const z = ZONES[ni];
@@ -516,7 +484,7 @@ function previewCard(st) {
   const ni = nextIndex(st);
   if (ni < 0) return "";
   const z = ZONES[ni];
-  if (!isActionZone(z) || st.msUntilNextZone > CHALLENGE_PREVIEW_MINUTES * 60000) return "";
+  if (!isAction(z) || st.msUntilNextZone > CHALLENGE_PREVIEW_MINUTES * 60000) return "";
   return `
     <div class="card card-preview">
       <p class="card-kicker pink">${t("zone.preview")}</p>
@@ -525,11 +493,15 @@ function previewCard(st) {
     </div>`;
 }
 
+function checkinFor() {
+  const n = P.presentProfiles().length;
+  return n > 1 ? `<p class="checkin-for">${t("zone.checkinFor", { n })}</p>` : "";
+}
+
 function renderZone(st, now) {
   const host = $("#screen-zone");
   const done = P.progressSet();
 
-  // Před začátkem noci: čekárna na Kiribati.
   if (st.isBeforeFirstZone) {
     host.innerHTML = `
       ${topCountdown(st, null)}
@@ -538,33 +510,31 @@ function renderZone(st, now) {
         <h1 class="zone-label">${esc(ZONES[0].label)}</h1>
         <p class="lead">${t("zone.waitSub")}</p>
       </div>
-      ${nextPrepCard(st)}
-      ${factBlock()}
-    `;
+      ${nextPrep(st)}
+      ${factBlock()}`;
     return;
   }
 
-  const { contextZone, contextIndex, taskZone, taskIndex } = computeHeldTask(st);
-  const start = ZONE_STARTS[contextIndex];
-  const date = formatCzDate(start);
+  const { ci, cz, ti, tz } = heldTask(st);
+  const start = ZONE_STARTS[ci];
   const since = now - start;
-  const isPause = contextZone.celebrates === false;
-
+  const pause = cz.celebrates === false;
   const flash =
-    isActionZone(contextZone) && contextIndex === taskIndex && since >= 0 && since < NOW_FLASH_SECONDS * 1000
+    isAction(cz) && ci === ti && since >= 0 && since < NOW_FLASH_SECONDS * 1000
       ? `<span class="now-flash">${t("zone.now.badge")}</span>`
       : "";
-  const mega = contextZone.intensity === "MEGA" ? `<span class="badge-mega">MEGA</span>` : "";
-  const merge = contextZone.merge ? `<p class="merge-note">${esc(contextZone.merge)}</p>` : "";
-  const about = zf(contextZone, "about") || t("zone.aboutPh", { off: contextZone.utcOffset });
+  const about = zf(cz, "about") || t("zone.aboutPh", { off: cz.utcOffset });
 
-  const head = `
+  const headHtml = `
     <div class="zone-head">
-      <p class="zone-time">${contextZone.czTime} <span class="dim">${t("zone.home")}, ${date}</span> ${flash}</p>
-      <h1 class="zone-label">${esc(contextZone.label)}</h1>
-      ${mega}
-      ${isPause ? `<p class="pause-tag">${t("zone.pause")}</p>` : ""}
-      ${merge}
+      <p class="zone-time">${cz.czTime} <span class="dim">${t("zone.home")}, ${formatCzDate(start)}</span> ${flash}</p>
+      <h1 class="zone-label">${esc(cz.label)}</h1>
+      <div class="zone-tags">
+        ${cz.intensity === "MEGA" ? `<span class="badge-mega">MEGA</span>` : ""}
+        <span class="badge-step">${ci + 1} / ${TOTAL}</span>
+      </div>
+      ${pause ? `<p class="pause-tag">${t("zone.pause")}</p>` : ""}
+      ${cz.merge ? `<p class="merge-note">${esc(cz.merge)}</p>` : ""}
     </div>
     <div class="card card-about">
       <p class="card-kicker blue">${t("zone.about")}</p>
@@ -572,70 +542,69 @@ function renderZone(st, now) {
     </div>
     <div class="card card-perl">
       <p class="card-kicker pink">${t("zone.perl")}</p>
-      <p class="perl-text">${md(zf(contextZone, "perlicka"))}</p>
+      <p class="perl-text">${md(zf(cz, "perlicka"))}</p>
     </div>
     <div class="card card-soft">
       <p class="card-kicker">${t("zone.trad")}</p>
-      <p>${md(zf(contextZone, "tradition"))}</p>
+      <p>${md(zf(cz, "tradition"))}</p>
     </div>`;
 
   let action = "";
-  if (isPause) {
-    const already = done.has(contextZone.id);
+  if (pause) {
     action = `
       ${
-        taskZone
+        tz
           ? `<div class="card card-held">
-              <p class="card-kicker">${t("zone.heldPause", { t: taskZone.czTime, z: esc(taskZone.label) })}</p>
-              <p>${md(zf(taskZone, "challenge"))}</p>
-            </div>`
+               <p class="card-kicker">${t("zone.heldPause", { t: tz.czTime, z: esc(tz.label) })}</p>
+               <p>${md(zf(tz, "challenge"))}</p>
+             </div>`
           : ""
       }
       <div class="checkin">
         <p class="checkin-micro">${t("zone.aliveMicro")}</p>
-        <button class="btn btn-alive btn-block" data-act="checkin" data-zone="${contextZone.id}">
-          ${already ? t("zone.aliveDone") : t("zone.alive")}
+        <button class="btn btn-alive btn-big btn-block" data-act="checkin" data-zone="${cz.id}">
+          ${done.has(cz.id) ? t("zone.aliveDone") : t("zone.alive")}
         </button>
+        ${checkinFor()}
         <p class="checkin-note">${t("zone.checkinNote")}</p>
       </div>`;
   } else {
-    const active = isActionZone(contextZone) ? contextZone : taskZone;
-    if (active) {
-      const held = active.id !== contextZone.id;
-      const already = done.has(active.id);
-      const penalty = zf(active, "symbolicPenaltyNote");
+    const a = isAction(cz) ? cz : tz;
+    if (a) {
+      const penalty = zf(a, "symbolicPenaltyNote");
       action = `
-        ${held ? `<p class="held-hint">${t("zone.held", { t: active.czTime, z: esc(active.label) })}</p>` : ""}
+        ${a.id !== cz.id ? `<p class="held-hint">${t("zone.held", { t: a.czTime, z: esc(a.label) })}</p>` : ""}
         <div class="card card-challenge">
           <p class="card-kicker gold">${t("zone.now")}</p>
-          <p class="challenge-text">${md(zf(active, "challenge"))}</p>
+          <p class="challenge-text">${md(zf(a, "challenge"))}</p>
           ${penalty ? `<p class="penalty"><strong>${t("zone.penalty")}</strong> ${md(penalty)}</p>` : ""}
         </div>
         <div class="checkin">
-          <button class="btn btn-primary btn-big btn-block" data-act="checkin" data-zone="${active.id}">
-            ${already ? t("zone.checkinAgain") : t("zone.checkin")}
+          <button class="btn btn-primary btn-big btn-block" data-act="checkin" data-zone="${a.id}">
+            ${done.has(a.id) ? t("zone.checkinAgain") : t("zone.checkin")}
           </button>
+          ${checkinFor()}
           <p class="checkin-note">${t("zone.checkinNote")}</p>
         </div>`;
     }
   }
 
   host.innerHTML = `
-    ${topCountdown(st, contextZone.id)}
+    ${topCountdown(st, cz.id)}
     ${previewCard(st)}
-    ${head}
+    ${headHtml}
     ${action}
     ${factBlock()}
-    ${nextPrepCard(st)}
-    <p class="counter-note">${t("zone.counter", { p: `<strong>${done.size} / ${TOTAL}</strong>` })}</p>
-  `;
+    ${nextPrep(st)}
+    <p class="counter-note">${t("zone.counter", { p: `<strong>${done.size} / ${TOTAL}</strong>` })}</p>`;
 }
 
-/* ------------------------------------------------------------------ */
-/* Velké odpočítávání 10 9 8 přes celý displej                          */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Velké odpočítávání přes celý displej                                 */
+/* ================================================================== */
 
 let bigDismissed = -1;
+let bigBurstFor = -1;
 
 function updateBig(st, now) {
   const el = $("#big-countdown");
@@ -645,31 +614,29 @@ function updateBig(st, now) {
   let secs = 0;
 
   const ni = nextIndex(st);
-  if (ni >= 0) {
-    const ms = st.msUntilNextZone;
-    if (ms > 0 && ms <= BIG_COUNTDOWN_SECONDS * 1000 && ZONES[ni].celebrates) {
-      mode = "count";
-      zone = ZONES[ni];
-      idx = ni;
-      secs = Math.ceil(ms / 1000);
-    }
+  if (ni >= 0 && st.msUntilNextZone > 0 && st.msUntilNextZone <= BIG_COUNTDOWN_SECONDS * 1000 && ZONES[ni].celebrates) {
+    mode = "count";
+    zone = ZONES[ni];
+    idx = ni;
+    secs = Math.ceil(st.msUntilNextZone / 1000);
   }
   if (!mode && !st.isBeforeFirstZone && !st.isAfterLastZone) {
     const ci = st.currentZoneIndex;
     const since = now - ZONE_STARTS[ci];
-    if (since >= 0 && since < BIG_NOW_SECONDS * 1000 && isActionZone(ZONES[ci])) {
+    if (since >= 0 && since < BIG_NOW_SECONDS * 1000 && isAction(ZONES[ci])) {
       mode = "now";
       zone = ZONES[ci];
       idx = ci;
     }
   }
 
-  const visibleHere = shown === "zone" || shown === "map";
-  if (!mode || idx === bigDismissed || !visibleHere) {
+  const here = shown === "zone" || shown === "map";
+  if (!mode || idx === bigDismissed || !here) {
     if (!el.hidden) {
       el.hidden = true;
       el.innerHTML = "";
       el.dataset.key = "";
+      document.body.classList.remove("no-scroll");
     }
     return;
   }
@@ -679,34 +646,36 @@ function updateBig(st, now) {
   el.dataset.key = key;
   el.dataset.idx = String(idx);
   el.hidden = false;
+  document.body.classList.add("no-scroll");
 
   if (mode === "count") {
     const prep = (zf(zone, "prep") || "").trim() || t("zone.nothing");
     el.innerHTML = `
       <div class="big-inner">
         <p class="big-kicker">${t("big.celebrates", { z: esc(zone.label) })}</p>
-        <div class="big-ring"><span class="big-num" key="${secs}">${secs}</span></div>
+        <div class="big-ring"><span class="big-num">${secs}</span></div>
         <p class="big-prep">${esc(prep)}</p>
-        ${
-          isActionZone(zone)
-            ? `<div class="big-card"><p class="card-kicker gold">${t("big.ready")}</p><p>${md(zf(zone, "challenge"))}</p></div>`
-            : ""
-        }
+        ${isAction(zone) ? `<div class="big-card"><p class="card-kicker gold">${t("big.ready")}</p><p>${md(zf(zone, "challenge"))}</p></div>` : ""}
         <p class="big-tap">${t("big.tap")}</p>
       </div>`;
   } else {
+    if (bigBurstFor !== idx) {
+      bigBurstFor = idx;
+      burst(zone.intensity === "MEGA" ? 6 : 3);
+    }
     el.innerHTML = `
-      <div class="big-inner big-now">
-        <div class="big-ring"><span class="big-num big-num-now">${t("big.now")}</span></div>
+      <div class="big-inner">
+        <p class="big-kicker">${esc(zone.label)}</p>
+        <div class="big-ring big-ring-now"><span class="big-num big-num-now">${t("big.now")}</span></div>
         <p class="big-prep">${t("big.go", { z: esc(zone.label) })}</p>
         <p class="big-tap">${t("big.tap")}</p>
       </div>`;
   }
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Mapa (náčrt)                                                         */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 const mapState = { s: 1, tx: 0, ty: 0, init: false };
 
@@ -714,37 +683,26 @@ function mapDims() {
   const stage = $("#map-stage");
   if (!stage) return null;
   const W = stage.clientWidth;
-  const Hs = stage.clientHeight;
-  const Hm = (W * MAP_VIEWBOX.h) / MAP_VIEWBOX.w;
-  return { stage, W, Hs, Hm };
-}
-
-function clampMap() {
-  const d = mapDims();
-  if (!d) return;
-  const { W, Hs, Hm } = d;
-  const s = mapState.s;
-  const minTx = W - W * s - W * 0.25;
-  const maxTx = W * 0.25;
-  const minTy = Math.min(Hs - Hm * s - Hs * 0.25, (Hs - Hm * s) / 2);
-  const maxTy = Math.max(Hs * 0.25, (Hs - Hm * s) / 2);
-  mapState.tx = Math.min(maxTx, Math.max(minTx, mapState.tx));
-  mapState.ty = Math.min(maxTy, Math.max(minTy, mapState.ty));
+  return { W, Hs: stage.clientHeight, Hm: (W * MAP_VIEWBOX.h) / MAP_VIEWBOX.w };
 }
 
 function applyMap() {
   const inner = $("#map-inner");
-  if (!inner) return;
-  clampMap();
-  inner.style.transform = `translate(${mapState.tx}px, ${mapState.ty}px) scale(${mapState.s})`;
+  const d = mapDims();
+  if (!inner || !d) return;
+  const { W, Hs, Hm } = d;
+  const s = mapState.s;
+  mapState.tx = Math.min(W * 0.25, Math.max(W - W * s - W * 0.25, mapState.tx));
+  mapState.ty = Math.min(Math.max(Hs * 0.25, (Hs - Hm * s) / 2), Math.max(Math.min(Hs - Hm * s - Hs * 0.25, (Hs - Hm * s) / 2), mapState.ty));
+  inner.style.transform = `translate(${mapState.tx}px, ${mapState.ty}px) scale(${s})`;
 }
 
-function zoomMap(factor, cx, cy) {
+function zoomMap(f, cx, cy) {
   const d = mapDims();
   if (!d) return;
   const ox = cx == null ? d.W / 2 : cx;
   const oy = cy == null ? d.Hs / 2 : cy;
-  const ns = Math.min(6, Math.max(1, mapState.s * factor));
+  const ns = Math.min(6, Math.max(1, mapState.s * f));
   mapState.tx = ox - (ox - mapState.tx) * (ns / mapState.s);
   mapState.ty = oy - (oy - mapState.ty) * (ns / mapState.s);
   mapState.s = ns;
@@ -756,42 +714,57 @@ function centerMap(id, scale) {
   if (!d) return;
   const p = id ? zonePoint(id) : null;
   if (!p) {
-    mapState.s = 1;
-    mapState.tx = 0;
-    mapState.ty = (d.Hs - d.Hm) / 2;
-    applyMap();
-    return;
+    Object.assign(mapState, { s: 1, tx: 0, ty: (d.Hs - d.Hm) / 2 });
+  } else {
+    const px = ((p[0] - MAP_VIEWBOX.x) / MAP_VIEWBOX.w) * d.W;
+    const py = ((p[1] - MAP_VIEWBOX.y) / MAP_VIEWBOX.h) * d.Hm;
+    Object.assign(mapState, { s: scale, tx: d.W / 2 - px * scale, ty: d.Hs / 2 - py * scale });
   }
-  const px = ((p[0] - MAP_VIEWBOX.x) / MAP_VIEWBOX.w) * d.W;
-  const py = ((p[1] - MAP_VIEWBOX.y) / MAP_VIEWBOX.h) * d.Hm;
-  mapState.s = scale;
-  mapState.tx = d.W / 2 - px * scale;
-  mapState.ty = d.Hs / 2 - py * scale;
   applyMap();
 }
 
-function wireMapDrag() {
+function wireMap() {
   const stage = $("#map-stage");
   if (!stage) return;
-  let drag = null;
+  const pts = new Map();
+  let start = null;
+
   stage.addEventListener("pointerdown", (e) => {
     if (e.target.closest("button")) return;
-    drag = { x: e.clientX, y: e.clientY, tx: mapState.tx, ty: mapState.ty };
     stage.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    start = { tx: mapState.tx, ty: mapState.ty, pts: new Map(pts), s: mapState.s };
     stage.classList.add("dragging");
   });
   stage.addEventListener("pointermove", (e) => {
-    if (!drag) return;
-    mapState.tx = drag.tx + (e.clientX - drag.x);
-    mapState.ty = drag.ty + (e.clientY - drag.y);
-    applyMap();
+    if (!pts.has(e.pointerId) || !start) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const now = [...pts.values()];
+    const was = [...start.pts.values()];
+    if (now.length >= 2 && was.length >= 2) {
+      // dva prsty: přiblížení
+      const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+      const f = dist(now[0], now[1]) / Math.max(1, dist(was[0], was[1]));
+      const r = stage.getBoundingClientRect();
+      const cx = (now[0].x + now[1].x) / 2 - r.left;
+      const cy = (now[0].y + now[1].y) / 2 - r.top;
+      const target = Math.min(6, Math.max(1, start.s * f));
+      zoomMap(target / mapState.s, cx, cy);
+    } else if (now.length === 1) {
+      const a = now[0];
+      const b = was[0];
+      mapState.tx = start.tx + (a.x - b.x);
+      mapState.ty = start.ty + (a.y - b.y);
+      applyMap();
+    }
   });
-  const end = () => {
-    drag = null;
-    stage.classList.remove("dragging");
+  const up = (e) => {
+    pts.delete(e.pointerId);
+    start = pts.size ? { tx: mapState.tx, ty: mapState.ty, pts: new Map(pts), s: mapState.s } : null;
+    if (!pts.size) stage.classList.remove("dragging");
   };
-  stage.addEventListener("pointerup", end);
-  stage.addEventListener("pointercancel", end);
+  stage.addEventListener("pointerup", up);
+  stage.addEventListener("pointercancel", up);
   stage.addEventListener(
     "wheel",
     (e) => {
@@ -803,35 +776,31 @@ function wireMapDrag() {
   );
 }
 
-function activeZoneId(st) {
-  return !st.isBeforeFirstZone && !st.isAfterLastZone ? st.currentZone.id : null;
-}
+const activeZoneId = (st) => (!st.isBeforeFirstZone && !st.isAfterLastZone ? st.currentZone.id : null);
 
 function renderMap(st, now) {
   const activeId = activeZoneId(st);
-  const startIdx = st.isBeforeFirstZone ? 0 : st.currentZoneIndex;
-  const rows = ZONES.slice(startIdx, startIdx + 6)
+  const from = st.isBeforeFirstZone ? 0 : st.currentZoneIndex;
+  const rows = ZONES.slice(from, from + 6)
     .map((z, k) => {
-      const i = startIdx + k;
+      const i = from + k;
       const isNow = z.id === activeId;
-      const right = isNow
-        ? `<span class="up-now">${t("map.nowTag")}</span>`
-        : `<span class="up-in">${t("map.in", { t: relTime(ZONE_STARTS[i] - now) })}</span>`;
-      return `<div class="up-row${isNow ? " up-row-now" : ""}"><span>${z.czTime}&nbsp;&nbsp;${esc(z.label)}</span>${right}</div>`;
+      return `
+        <div class="up-row${isNow ? " up-row-now" : ""}">
+          <span>${z.czTime}&nbsp;&nbsp;${esc(z.label)}</span>
+          ${isNow ? `<span class="up-now">${t("map.nowTag")}</span>` : `<span class="up-in">${t("map.in", { t: relTime(ZONE_STARTS[i] - now) })}</span>`}
+        </div>`;
     })
     .join("");
 
   $("#screen-map").innerHTML = `
-    <div class="screen-head">
-      <h1 class="h1">${t("map.title")}</h1>
-      <p class="sub">${activeId ? t("map.sub") : t("map.before")}</p>
-    </div>
+    ${head(t("map.title"), activeId ? t("map.sub") : t("map.before"))}
     <div class="map-stage" id="map-stage">
       <div class="map-inner" id="map-inner">${mapSvg({ zones: ZONES, activeId, doneIds: P.progressSet() })}</div>
       <div class="map-ctrls">
         <button data-act="zoom" data-f="1.4" aria-label="+">+</button>
         <button data-act="zoom" data-f="0.71" aria-label="-">&minus;</button>
-        <button data-act="center" aria-label="${t("map.center")}">${t("map.center")}</button>
+        <button data-act="center">${t("map.center")}</button>
       </div>
     </div>
     <div class="legend">
@@ -845,10 +814,9 @@ function renderMap(st, now) {
     <div class="btn-row">
       <button class="btn btn-primary" data-act="share-zone">${t("map.share")}</button>
       <button class="btn btn-ghost" data-act="go" data-to="zone">${t("map.back")}</button>
-    </div>
-  `;
+    </div>`;
 
-  wireMapDrag();
+  wireMap();
   if (!mapState.init) {
     mapState.init = true;
     requestAnimationFrame(() => centerMap(activeId, activeId ? 2.2 : 1));
@@ -857,29 +825,53 @@ function renderMap(st, now) {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Profil, parta, záloha                                                */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Ty a tvoje parta                                                     */
+/* ================================================================== */
 
-let backupMode = null; // null | "export" | "import"
+let backupMode = null;
 let backupMsg = "";
+let editId = null; // účet, kterému se právě píše jméno ("new" = nový účet)
+let delId = null; // účet čekající na potvrzení smazání
+
+function nameForm(id, value) {
+  return `
+    <form class="name-form" data-form="name" data-id="${id}">
+      <input class="input" name="n" maxlength="30" value="${esc(value)}" placeholder="${t("profile.namePrompt")}" autocomplete="off" />
+      <button class="btn btn-primary btn-small" type="submit">OK</button>
+    </form>`;
+}
 
 function renderProfile() {
   const me = P.getActive();
-  const profiles = P.getProfiles();
   const group = P.getGroup();
-  const link = P.inviteLink();
 
-  const accounts = profiles
+  const crew = P.getProfiles()
     .map((p) => {
-      const isMe = p.id === me.id;
+      const holder = p.id === me.id;
+      const here = holder || p.present;
+      if (editId === p.id) return `<div class="crew-row is-here">${nameForm(p.id, p.name)}</div>`;
+      const confirmDel = delId === p.id;
       return `
-      <div class="acc-row${isMe ? " acc-me" : ""}">
-        <span class="avatar avatar-sm">${esc(initial(p))}</span>
-        <span class="acc-name">${esc(displayName(p))}${isMe ? ` <span class="dim">(${t("profile.you")})</span>` : ""}</span>
-        <span class="acc-count">${p.progress.length} / ${TOTAL}</span>
-        ${isMe ? "" : `<button class="btn btn-ghost btn-small" data-act="switch" data-id="${p.id}">${t("profile.use")}</button>`}
-      </div>`;
+        <div class="crew-row${here ? " is-here" : ""}">
+          <span class="avatar avatar-sm${holder ? " avatar-holder" : ""}">${esc(initialOf(p))}</span>
+          <div class="crew-main">
+            <p class="crew-name">${esc(nameOf(p))}</p>
+            <p class="crew-sub">${holder ? t("profile.holder") : here ? t("profile.present") : t("profile.away")}, ${p.progress.length} / ${TOTAL}</p>
+          </div>
+          ${
+            confirmDel
+              ? `<button class="btn btn-danger btn-small" data-act="delete" data-id="${p.id}">${t("profile.deleteSure")}</button>
+                 <button class="btn btn-ghost btn-small" data-act="delete-cancel">${t("profile.no")}</button>`
+              : `${
+                  holder
+                    ? `<button class="btn btn-ghost btn-small" data-act="rename" data-id="${p.id}">${t("profile.rename")}</button>`
+                    : `<button class="chip-toggle${here ? " on" : ""}" data-act="present" data-id="${p.id}" aria-pressed="${here}">${here ? t("profile.present") : t("profile.away")}</button>
+                       <button class="btn btn-ghost btn-small" data-act="switch" data-id="${p.id}">${t("profile.makeHolder")}</button>`
+                }
+                <button class="icon-del" data-act="delete-ask" data-id="${p.id}" aria-label="${t("profile.delete")}" title="${t("profile.delete")}">&times;</button>`
+          }
+        </div>`;
     })
     .join("");
 
@@ -896,31 +888,31 @@ function renderProfile() {
   }
 
   $("#screen-profile").innerHTML = `
-    <div class="screen-head">
-      <h1 class="h1">${t("profile.title")}</h1>
-      <p class="sub">${t("profile.sub")}</p>
-    </div>
+    ${head(t("profile.title"), t("profile.sub"))}
 
     <div class="card acc-card">
-      <span class="avatar">${esc(initial(me))}</span>
+      <span class="avatar">${esc(initialOf(me))}</span>
       <div class="acc-main">
-        <p class="acc-title">${esc(displayName(me))}</p>
+        <p class="acc-title">${esc(nameOf(me))}</p>
         <p class="dim">${t("profile.zones", { p: `${me.progress.length} / ${TOTAL}` })}</p>
       </div>
-      <button class="btn btn-ghost btn-small" data-act="rename">${t("profile.rename")}</button>
     </div>
 
-    <p class="kicker">${t("profile.accounts")}</p>
-    <div class="acc-list">${accounts}</div>
-    <button class="btn btn-ghost btn-block" data-act="add-account">${t("profile.add")}</button>
-    <p class="small dim">${t("profile.accountsHint")}</p>
+    <p class="kicker">${t("profile.crewPhone")}</p>
+    <div class="crew-list">${crew}</div>
+    ${
+      editId === "new"
+        ? `<div class="crew-row is-here crew-new">${nameForm("new", "")}</div>`
+        : `<button class="btn btn-ghost btn-block" data-act="add-account">${t("profile.add")}</button>`
+    }
+    <p class="small dim hint">${t("profile.crewHint")}</p>
 
     <div class="card card-invite">
       <p class="card-kicker pink">${t("profile.inviteT")}</p>
       ${group ? `<p class="small">${t("profile.group", { g: esc(group.name) })}</p>` : ""}
       <p>${t("profile.inviteD")}</p>
       <div class="invite-row">
-        <input class="code-input" id="invite-link" readonly value="${esc(link)}" />
+        <input class="input input-code" id="invite-link" readonly value="${esc(P.inviteLink())}" />
         <button class="btn btn-primary btn-small" data-act="copy-invite">${t("profile.copy")}</button>
       </div>
       <p class="small dim">${t("profile.inviteNote")}</p>
@@ -937,55 +929,40 @@ function renderProfile() {
       ${backupMsg ? `<p class="small backup-msg">${backupMsg}</p>` : ""}
     </div>
 
-    <p class="foot-note">${t("profile.foot")}</p>
-  `;
+    <p class="foot-note">${t("profile.foot")}</p>`;
 }
 
-async function copyText(text, inputEl) {
+async function copyText(text, input) {
   try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch (e) {
-    if (inputEl) {
-      inputEl.select();
-      try {
-        return document.execCommand("copy");
-      } catch (err) {
-        return false;
-      }
+    if (!input) return false;
+    input.select();
+    try {
+      return document.execCommand("copy");
+    } catch (err) {
+      return false;
     }
-    return false;
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* O projektu                                                           */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* O projektu, konec noci                                               */
+/* ================================================================== */
 
 function renderAbout() {
   $("#screen-about").innerHTML = `
-    <div class="screen-head">
-      <h1 class="h1">${t("about.title")}</h1>
-    </div>
+    ${head(t("about.title"))}
     <div class="card"><p>${t("about.p1", { n: TOTAL })}</p></div>
     <div class="card card-soft"><p>${t("about.p2")}</p></div>
     <div class="card card-perl"><p>${t("about.p3")}</p></div>
-    <button class="btn btn-ghost btn-block" data-act="go" data-to="intro">${t("about.back")}</button>
-  `;
+    <button class="btn btn-ghost btn-block" data-act="go" data-to="intro">${t("about.back")}</button>`;
 }
-
-/* ------------------------------------------------------------------ */
-/* Konec noci                                                           */
-/* ------------------------------------------------------------------ */
 
 function renderEnd() {
   const n = P.progressSet().size;
-  let line;
-  if (n === 0) line = t("end.l0");
-  else if (n < 10) line = t("end.l1");
-  else if (n < TOTAL) line = t("end.l2");
-  else line = t("end.l3", { n: TOTAL });
-
+  const line = n === 0 ? t("end.l0") : n < 10 ? t("end.l1") : n < TOTAL ? t("end.l2") : t("end.l3", { n: TOTAL });
   $("#screen-end").innerHTML = `
     <div class="end">
       <p class="kicker center">${t("end.kicker")}</p>
@@ -993,24 +970,17 @@ function renderEnd() {
       <p class="end-num">${n}</p>
       <p class="end-of">${t("end.of", { n: TOTAL })}</p>
       <p class="end-line">${line}</p>
-
       <div class="card card-share">
         <p class="card-kicker pink">${t("end.shareKicker")}</p>
         <p class="share-line">${t("end.shareLine", { x: n })}</p>
         <p class="small dim">${t("end.shareSub")}</p>
       </div>
       <button class="btn btn-primary btn-big btn-block" data-act="share-end">${t("end.shareBtn")}</button>
-
       <p class="disclaimer">${t("end.disc")}</p>
       ${emailForm("email.kickerEnd")}
       <p class="foot-note">${t("end.noBoxes")}</p>
-    </div>
-  `;
+    </div>`;
 }
-
-/* ------------------------------------------------------------------ */
-/* Sdílení                                                              */
-/* ------------------------------------------------------------------ */
 
 async function doShare(opts) {
   try {
@@ -1022,268 +992,268 @@ async function doShare(opts) {
   }
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /* Události                                                             */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
-function demoJumpZone(delta) {
+function demoJump(delta) {
   const st = resolveNight(ZONES, getEffectiveTime());
-  let base = st.isBeforeFirstZone ? (delta > 0 ? -1 : 0) : st.currentZoneIndex;
-  const idx = Math.max(0, Math.min(TOTAL - 1, base + delta));
-  setDemoToZone(ZONES, idx);
+  const base = st.isBeforeFirstZone ? (delta > 0 ? -1 : 0) : st.currentZoneIndex;
+  setDemoToZone(ZONES, Math.max(0, Math.min(TOTAL - 1, base + delta)));
+  setFlag(LS.entered);
+  route = "auto";
 }
 
+function rerender() {
+  rev++;
+  tick();
+}
+
+function focusName() {
+  const input = $('[data-form="name"] input');
+  if (input) {
+    input.focus();
+    input.select();
+  }
+}
+
+const ACTIONS = {
+  go: (el) => go(el.dataset.to),
+  menu: () => ($("#menu").hidden ? openMenu() : closeMenu()),
+  lang: () => {
+    setLang(getLang() === "cs" ? "en" : "cs");
+    demoKey = "";
+    if (!$("#menu").hidden) openMenu();
+    rerender();
+  },
+  start: () => go(flag(LS.rules) ? "zone" : "rules"),
+  "rules-done": () => {
+    setFlag(LS.rules);
+    go("zone");
+  },
+  checkin: (el) => {
+    try {
+      window.open(INSTAGRAM_URL, "_blank", "noopener");
+    } catch (e) {
+      /* popup zablokovaný, zapíše se stejně */
+    }
+    const who = P.addCheckin(el.dataset.zone);
+    if (who.length > 1) toast(t("zone.savedFor", { names: who.map(nameOf).join(", ") }));
+    rerender();
+  },
+  zoom: (el) => zoomMap(parseFloat(el.dataset.f)),
+  center: () => {
+    const id = activeZoneId(resolveNight(ZONES, getEffectiveTime()));
+    centerMap(id, id ? 2.6 : 1);
+  },
+  "share-zone": async () => {
+    const st = resolveNight(ZONES, getEffectiveTime());
+    if (st.isBeforeFirstZone || st.isAfterLastZone) return toast(t("map.before"));
+    await doShare({
+      kicker: st.currentZone.label,
+      big: `${st.currentZoneIndex + 1}/${TOTAL}`,
+      line: t("share.zoneLine", { i: st.currentZoneIndex + 1, n: TOTAL }),
+      sub: t("share.zoneSub", { z: st.currentZone.label }),
+    });
+  },
+  "share-end": async () => {
+    const n = P.progressSet().size;
+    await doShare({ kicker: t("share.endKicker"), big: String(n), line: t("share.endLine", { x: n }), sub: t("share.endSub") });
+  },
+  rename: (el) => {
+    editId = el.dataset.id;
+    delId = null;
+    rerender();
+    focusName();
+  },
+  "add-account": () => {
+    editId = "new";
+    delId = null;
+    rerender();
+    focusName();
+  },
+  switch: (el) => {
+    P.setActive(el.dataset.id);
+    rerender();
+  },
+  present: (el) => {
+    P.togglePresent(el.dataset.id);
+    rerender();
+  },
+  "delete-ask": (el) => {
+    delId = el.dataset.id;
+    editId = null;
+    rerender();
+  },
+  "delete-cancel": () => {
+    delId = null;
+    rerender();
+  },
+  delete: (el) => {
+    const p = P.getProfiles().find((x) => x.id === el.dataset.id);
+    delId = null;
+    if (!p) return rerender();
+    P.deleteProfile(p.id);
+    toast(t("profile.deleted"));
+    rerender();
+  },
+  "copy-invite": async () => {
+    const ok = await copyText(P.inviteLink(), $("#invite-link"));
+    toast(ok ? t("profile.copied") : P.inviteLink());
+  },
+  backup: () => {
+    backupMode = backupMode === "export" ? null : "export";
+    backupMsg = "";
+    rerender();
+  },
+  restore: () => {
+    backupMode = backupMode === "import" ? null : "import";
+    backupMsg = "";
+    rerender();
+  },
+  "copy-backup": async () => {
+    const ok = await copyText(P.exportCode(), $("#backup-out"));
+    toast(ok ? t("profile.copied") : t("share.fail"));
+  },
+  "do-restore": () => {
+    const ok = P.importCode(($("#backup-in") || {}).value || "");
+    backupMode = ok ? null : backupMode;
+    backupMsg = ok ? t("profile.restoreOk") : t("profile.restoreBad");
+    rerender();
+  },
+  "demo-toggle": () => {
+    setDemoActive(!isDemoActive());
+    demoKey = "";
+    closeMenu();
+    tick();
+  },
+  "demo-first": () => {
+    setDemoToZone(ZONES, 0);
+    setFlag(LS.entered);
+    route = "auto";
+    tick();
+  },
+  "demo-prev": () => {
+    demoJump(-1);
+    tick();
+  },
+  "demo-next": () => {
+    demoJump(1);
+    tick();
+  },
+  "demo-plus1": () => {
+    advanceDemo(1);
+    tick();
+  },
+  "demo-plus5": () => {
+    advanceDemo(5);
+    tick();
+  },
+  "demo-before": () => {
+    const ni = nextIndex(resolveNight(ZONES, getEffectiveTime()));
+    if (ni >= 0) {
+      setDemoClock(ZONE_STARTS[ni] - 15000);
+      setFlag(LS.entered);
+      bigDismissed = -1;
+      if (route !== "map") route = "auto";
+    }
+    tick();
+  },
+  "demo-end": () => {
+    setDemoToZone(ZONES, TOTAL - 1);
+    advanceDemo(31);
+    route = "auto";
+    tick();
+  },
+};
+
 function wireEvents() {
-  document.addEventListener("click", async (e) => {
+  document.addEventListener("click", (e) => {
     const target = e.target instanceof Element ? e.target : null;
     if (!target) return;
 
-    // Klik mimo menu ho zavře.
-    const menu = $("#menu");
-    if (!menu.hidden && target === menu) {
-      closeMenu();
-      return;
-    }
+    if (target === $("#menu")) return closeMenu();
 
-    // Klik na velké odpočítávání ho zavře.
     const big = target.closest("#big-countdown");
     if (big) {
       bigDismissed = parseInt(big.dataset.idx || "-1", 10);
       big.hidden = true;
       big.dataset.key = "";
+      document.body.classList.remove("no-scroll");
       return;
     }
 
     const el = target.closest("[data-act]");
-    if (!el) return;
-    const act = el.dataset.act;
-
-    switch (act) {
-      case "go":
-        go(el.dataset.to);
-        break;
-      case "menu":
-        if ($("#menu").hidden) openMenu();
-        else closeMenu();
-        break;
-      case "lang":
-        setLang(getLang() === "cs" ? "en" : "cs");
-        demoKey = "";
-        lastKey = "";
-        if (!$("#menu").hidden) openMenu();
-        tick();
-        break;
-      case "start":
-        if (flag(LS.rules)) go("zone");
-        else go("rules");
-        break;
-      case "rules-done":
-        setFlag(LS.rules);
-        go("zone");
-        break;
-      case "checkin": {
-        const id = el.dataset.zone;
-        try {
-          window.open(INSTAGRAM_URL, "_blank", "noopener");
-        } catch (err) {
-          /* popup zablokovaný, počítadlo se zvedne stejně */
-        }
-        if (id) P.addCheckin(id);
-        lastKey = "";
-        tick();
-        break;
-      }
-      case "zoom":
-        zoomMap(parseFloat(el.dataset.f));
-        break;
-      case "center": {
-        const st = resolveNight(ZONES, getEffectiveTime());
-        const id = activeZoneId(st);
-        centerMap(id, id ? 2.6 : 1);
-        break;
-      }
-      case "share-zone": {
-        const st = resolveNight(ZONES, getEffectiveTime());
-        if (st.isBeforeFirstZone || st.isAfterLastZone) {
-          toast(t("map.before"));
-          break;
-        }
-        await doShare({
-          kicker: st.currentZone.label,
-          big: `${st.currentZoneIndex + 1}/${TOTAL}`,
-          line: t("share.zoneLine", { i: st.currentZoneIndex + 1, n: TOTAL }),
-          sub: t("share.zoneSub", { z: st.currentZone.label }),
-        });
-        break;
-      }
-      case "share-end": {
-        const n = P.progressSet().size;
-        await doShare({
-          kicker: t("share.endKicker"),
-          big: String(n),
-          line: t("share.endLine", { x: n }),
-          sub: t("share.endSub"),
-        });
-        break;
-      }
-      case "rename": {
-        const name = window.prompt(t("profile.namePrompt"), P.getActive().name || "");
-        if (name && name.trim()) {
-          P.renameActive(name);
-          profileRev++;
-          tick();
-        }
-        break;
-      }
-      case "add-account": {
-        const name = window.prompt(t("profile.namePrompt"), "");
-        if (name && name.trim()) {
-          P.addProfile(name);
-          profileRev++;
-          tick();
-        }
-        break;
-      }
-      case "switch":
-        P.setActive(el.dataset.id);
-        profileRev++;
-        tick();
-        break;
-      case "copy-invite": {
-        const ok = await copyText(P.inviteLink(), $("#invite-link"));
-        toast(ok ? t("profile.copied") : P.inviteLink());
-        break;
-      }
-      case "backup":
-        backupMode = backupMode === "export" ? null : "export";
-        backupMsg = "";
-        profileRev++;
-        tick();
-        break;
-      case "restore":
-        backupMode = backupMode === "import" ? null : "import";
-        backupMsg = "";
-        profileRev++;
-        tick();
-        break;
-      case "copy-backup": {
-        const ok = await copyText(P.exportCode(), $("#backup-out"));
-        toast(ok ? t("profile.copied") : t("share.fail"));
-        break;
-      }
-      case "do-restore": {
-        const code = ($("#backup-in") || {}).value || "";
-        if (P.importCode(code)) {
-          backupMode = null;
-          backupMsg = t("profile.restoreOk");
-        } else {
-          backupMsg = t("profile.restoreBad");
-        }
-        profileRev++;
-        tick();
-        break;
-      }
-      case "demo-toggle":
-        setDemoActive(!isDemoActive());
-        demoKey = "";
-        closeMenu();
-        tick();
-        break;
-      case "demo-first":
-        setDemoToZone(ZONES, 0);
-        setFlag(LS.entered);
-        route = "auto";
-        tick();
-        break;
-      case "demo-prev":
-        demoJumpZone(-1);
-        setFlag(LS.entered);
-        tick();
-        break;
-      case "demo-next":
-        demoJumpZone(1);
-        setFlag(LS.entered);
-        tick();
-        break;
-      case "demo-plus1":
-        advanceDemo(1);
-        tick();
-        break;
-      case "demo-plus5":
-        advanceDemo(5);
-        tick();
-        break;
-      case "demo-before": {
-        const st = resolveNight(ZONES, getEffectiveTime());
-        const ni = nextIndex(st);
-        if (ni >= 0) {
-          setDemoClock(ZONE_STARTS[ni] - 15000);
-          setFlag(LS.entered);
-          bigDismissed = -1;
-        }
-        tick();
-        break;
-      }
-      case "demo-end":
-        setDemoToZone(ZONES, TOTAL - 1);
-        advanceDemo(31);
-        route = "auto";
-        tick();
-        break;
-      default:
-        break;
-    }
+    if (el && ACTIONS[el.dataset.act]) ACTIONS[el.dataset.act](el);
   });
 
   document.addEventListener("submit", (e) => {
+    const nameF = e.target instanceof Element ? e.target.closest('[data-form="name"]') : null;
+    if (nameF) {
+      e.preventDefault();
+      const val = ($("input", nameF).value || "").trim();
+      const id = nameF.dataset.id;
+      if (val) {
+        if (id === "new") P.addProfile(val);
+        else P.renameProfile(id, val);
+      }
+      editId = null;
+      rerender();
+      return;
+    }
     const form = e.target instanceof Element ? e.target.closest('[data-form="email"]') : null;
     if (!form) return;
     e.preventDefault();
-    const input = $(".email-input", form);
+    const input = $("input", form);
     const email = input ? input.value.trim() : "";
     if (!email) return;
     try {
-      const list = JSON.parse(localStorage.getItem(LS.email) || "[]");
-      const arr = Array.isArray(list) ? list : [];
-      if (!arr.includes(email)) arr.push(email);
-      localStorage.setItem(LS.email, JSON.stringify(arr));
+      const arr = JSON.parse(localStorage.getItem(LS.email) || "[]");
+      const list = Array.isArray(arr) ? arr : [];
+      if (!list.includes(email)) list.push(email);
+      localStorage.setItem(LS.email, JSON.stringify(list));
     } catch (err) {
       /* ignore */
     }
-    const ok = form.parentElement ? $(".email-ok", form.parentElement) : null;
+    const ok = $(".email-ok", form.parentElement);
     if (ok) ok.textContent = t("email.ok");
-    if (input) input.value = "";
+    input.value = "";
   });
 
-  window.addEventListener("resize", () => {
-    if (shown === "map") applyMap();
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
   });
+
+  window.addEventListener("resize", () => shown === "map" && applyMap());
 }
 
-/* ------------------------------------------------------------------ */
-/* Pozvánka z odkazu                                                    */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
+/* Pozvánka, service worker, start                                      */
+/* ================================================================== */
 
-function handleInviteQuery() {
+function handleInvite() {
   try {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("parta");
-    if (code) {
-      const g = P.joinGroup(code, params.get("jmeno") || "parta");
-      if (g) setTimeout(() => toast(t("profile.joined", { g: g.name })), 400);
-    }
+    const q = new URLSearchParams(window.location.search);
+    const code = q.get("parta");
+    if (!code) return;
+    const g = P.joinGroup(code, q.get("jmeno") || "parta");
+    if (g) setTimeout(() => toast(t("profile.joined", { g: g.name })), 400);
   } catch (e) {
     /* ignore */
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Service worker                                                       */
-/* ------------------------------------------------------------------ */
-
-function registerServiceWorker() {
-  const okProto = location.protocol === "http:" || location.protocol === "https:";
-  if (!okProto || !("serviceWorker" in navigator)) return;
+function registerSW() {
+  const ok = location.protocol === "http:" || location.protocol === "https:";
+  if (!ok || !("serviceWorker" in navigator)) return;
+  // Když se nainstaluje nová verze, jednou obnov stránku, ať nikdo nevisí na staré.
+  let reloaded = false;
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return;
+    reloaded = true;
+    window.location.reload();
+  });
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {
       /* bez service workeru appka jede dál */
@@ -1291,22 +1261,16 @@ function registerServiceWorker() {
   });
 }
 
-/* ------------------------------------------------------------------ */
-/* Start                                                                */
-/* ------------------------------------------------------------------ */
-
 function boot() {
   document.documentElement.lang = getLang();
+  initFx($("#fx"));
   initDemoFromQuery(window.location.search);
-  handleInviteQuery();
+  handleInvite();
   wireEvents();
   subscribe(tick);
   tick();
-  registerServiceWorker();
+  registerSW();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", boot);
-} else {
-  boot();
-}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();

@@ -5,7 +5,7 @@
  * a appka pořád jede i offline (třeba když v noci padne signál).
  */
 
-const CACHE = "nyb-shell-v5";
+const CACHE = "nyb-shell-v6";
 
 const SHELL = [
   "./",
@@ -20,6 +20,7 @@ const SHELL = [
   "./js/map.js",
   "./js/profiles.js",
   "./js/share.js",
+  "./js/fx.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];

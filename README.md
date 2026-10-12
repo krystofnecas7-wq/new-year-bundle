@@ -26,7 +26,7 @@ Otevři http://localhost:8777/?demo=1
   Ťuknutím jde zavřít.
 - **Mapa noci**: NÁČRT. Hrubé kontinenty, zoom, posouvání, slavící zóna růžově,
   tvoje check-iny zeleně, seznam co tě čeká.
-- **Ty a tvoje parta**: víc účtů na jednom mobilu, pozvánka odkazem, záloha
+- **Ty a tvoje parta**: víc účtů na jednom mobilu, přepínač "u toho" (check-in se zapíše všem, kdo jsou u toho), mazání účtu, pozvánka odkazem, záloha
   a obnova postupu kódem.
 - **O projektu**, **Konec noci** (shrnutí plus kartička do stories).
 - **CZ / EN** přepínač (UI texty; obsah zón zatím česky).

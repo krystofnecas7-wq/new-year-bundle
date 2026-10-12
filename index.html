@@ -18,7 +18,9 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <!-- Demo lišta, jen pro testování. -->
+    <!-- Ohňostroje v pozadí, jemně. -->
+    <canvas id="fx" class="fx" aria-hidden="true"></canvas>
+
     <div id="demo-bar" class="demo-bar" hidden></div>
 
     <header class="topbar">
@@ -29,16 +31,12 @@
       <div class="topbar-right">
         <button class="progress-badge js-progress" data-act="go" data-to="profile" aria-label="Postup"></button>
         <button class="lang-pill js-lang" data-act="lang" aria-label="Jazyk"></button>
-        <button class="icon-btn" data-act="menu" aria-label="Menu">
-          <span></span><span></span><span></span>
-        </button>
+        <button class="avatar-btn js-avatar" data-act="go" data-to="profile" aria-label="Profil"></button>
+        <button class="icon-btn" data-act="menu" aria-label="Menu"><span></span><span></span><span></span></button>
       </div>
     </header>
 
-    <!-- Menu -->
-    <div id="menu" class="menu" hidden>
-      <div class="menu-sheet" id="menu-sheet"></div>
-    </div>
+    <div id="menu" class="menu" hidden><div class="menu-sheet" id="menu-sheet"></div></div>
 
     <main class="app">
       <section id="screen-intro" class="screen" hidden></section>
@@ -50,14 +48,10 @@
       <section id="screen-end" class="screen" hidden></section>
     </main>
 
-    <!-- Velké odpočítávání 10 9 8 přes celý displej. -->
+    <footer class="footer"><p class="js-by">by All Around Value</p></footer>
+
     <div id="big-countdown" class="big-cd" hidden></div>
-
     <div id="toast" class="toast" hidden></div>
-
-    <footer class="footer">
-      <p class="js-by">by All Around Value</p>
-    </footer>
 
     <script type="module" src="js/app.js"></script>
   </body>

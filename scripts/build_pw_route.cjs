@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
-const files = ["index.html", "manifest.webmanifest", "css/styles.css", "js/app.js", "js/zones.js", "js/time.js", "js/i18n.js", "js/facts.js", "js/map.js", "js/profiles.js", "js/share.js", "sw.js"];
+const files = ["index.html", "manifest.webmanifest", "css/styles.css", "js/app.js", "js/zones.js", "js/time.js", "js/i18n.js", "js/facts.js", "js/map.js", "js/profiles.js", "js/share.js", "js/fx.js", "sw.js"];
 const map = {};
 for (const f of files) map["/" + f] = fs.readFileSync(path.join(root, f), "utf8");
 map["/"] = map["/index.html"];
