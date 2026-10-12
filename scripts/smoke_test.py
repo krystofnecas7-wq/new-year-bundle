@@ -28,7 +28,7 @@ t.start()
 
 paths = [
     "/", "/index.html", "/css/styles.css", "/js/app.js", "/js/zones.js",
-    "/js/time.js", "/js/i18n.js", "/js/facts.js", "/js/map.js",
+    "/js/time.js", "/js/i18n.js", "/js/facts.js", "/js/map.js", "/js/land.js",
     "/js/profiles.js", "/js/share.js", "/js/fx.js", "/manifest.webmanifest", "/sw.js",
     "/icons/icon-192.png", "/icons/icon-512.png",
 ]

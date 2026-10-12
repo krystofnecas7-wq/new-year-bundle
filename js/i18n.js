@@ -115,7 +115,7 @@ const STRINGS = {
     "map.center": "Kde jsem",
     "map.back": "Zpět na zónu",
     "map.share": "Pochlub se do stories",
-    "map.note": "Mapa je zatím jen náčrt. Opravdová přijde v další verzi.",
+    "map.note": "Růžový pruh je časové pásmo, kde zrovna bije půlnoc. Posouvá se celou noc na západ.",
     "map.before": "Noc ještě nezačala",
 
     "end.kicker": "A je po noci",
@@ -308,7 +308,7 @@ const STRINGS = {
     "map.center": "Where am I",
     "map.back": "Back to zone",
     "map.share": "Flex it in stories",
-    "map.note": "The map is just a sketch for now. The real one comes next version.",
+    "map.note": "The pink stripe is the time zone where it is midnight right now. It moves west all night.",
     "map.before": "The night has not started yet",
 
     "end.kicker": "And the night is over",

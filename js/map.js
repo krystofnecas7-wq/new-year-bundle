@@ -1,10 +1,12 @@
 /**
- * map.js, NÁČRT mapy světa pro New Year Bundle.
+ * map.js, mapa noci pro New Year Bundle.
  *
- * Schválně jen "jakoby": hrubé tvary kontinentů a body zón zhruba na správných
- * místech (souřadnice hlavních měst). Opravdová mapa přijde v další verzi.
+ * Skutečné tvary pevniny (Natural Earth 1:110m, js/land.js), body zón na
+ * místech hlavních měst a zvýrazněný pruh pásma, kde zrovna bije půlnoc.
  * Projekce je obyčejná rovnoplochá: x = délka + 180, y = 90 minus šířka.
  */
+
+import { LAND_PATH } from "./land.js";
 
 // [zeměpisná šířka, délka] reprezentativního místa každé zastávky.
 export const ZONE_COORDS = {
@@ -41,102 +43,83 @@ export const ZONE_COORDS = {
   "americka-samoa": [-14.3, -170.7],
 };
 
-// Hrubé obrysy kontinentů jako [délka, šířka]. Náčrt, ne kartografie.
-const LAND = [
-  // Severní Amerika
-  [[-165, 66], [-140, 70], [-95, 74], [-70, 62], [-55, 50], [-66, 44], [-80, 26], [-82, 30], [-97, 26], [-97, 18], [-88, 15], [-80, 8], [-85, 12], [-105, 20], [-112, 30], [-118, 33], [-124, 42], [-125, 49], [-135, 58], [-150, 60], [-165, 60]],
-  // Grónsko
-  [[-55, 82], [-25, 82], [-20, 72], [-42, 60], [-52, 66], [-58, 76]],
-  // Jižní Amerika
-  [[-80, 10], [-62, 11], [-50, 0], [-35, -6], [-40, -22], [-48, -28], [-58, -38], [-66, -55], [-75, -48], [-72, -30], [-71, -18], [-81, -5]],
-  // Evropa
-  [[-10, 36], [-9, 43], [-2, 44], [-5, 48], [2, 51], [8, 54], [5, 58], [10, 63], [18, 70], [30, 71], [42, 67], [40, 46], [28, 41], [22, 36], [15, 38], [12, 44], [5, 43], [-2, 37]],
-  // Velká Británie
-  [[-5, 50], [1, 51], [0, 54], [-2, 58], [-6, 57], [-4, 54]],
-  // Afrika
-  [[-17, 15], [-10, 30], [-6, 36], [10, 37], [20, 32], [32, 31], [35, 24], [43, 12], [51, 11], [40, -10], [40, -16], [32, -27], [20, -35], [12, -17], [9, 4], [-8, 5], [-15, 10]],
-  // Madagaskar
-  [[44, -13], [50, -15], [47, -25], [43, -22]],
-  // Asie (včetně Arábie a Indie, hodně zjednodušeně)
-  [[28, 41], [40, 46], [42, 67], [60, 72], [80, 74], [100, 78], [130, 72], [160, 70], [180, 66], [175, 62], [160, 58], [142, 52], [140, 46], [130, 42], [122, 38], [122, 30], [115, 22], [108, 18], [106, 10], [100, 13], [98, 8], [95, 16], [90, 22], [80, 15], [77, 8], [72, 20], [66, 25], [57, 25], [59, 22], [52, 16], [43, 13], [35, 28], [35, 33], [36, 37]],
-  // Japonsko
-  [[130, 32], [135, 34], [141, 36], [142, 43], [140, 41], [136, 36]],
-  // Indonésie a Filipíny, pár kousků
-  [[95, 5], [105, -6], [100, 0]],
-  [[110, -7], [120, -8], [114, -9]],
-  [[109, 1], [118, 7], [117, -3], [111, -2]],
-  [[131, -1], [150, -6], [142, -9]],
-  [[120, 18], [124, 13], [122, 7], [126, 7], [124, 12]],
-  // Austrálie
-  [[114, -22], [122, -18], [130, -12], [137, -12], [142, -11], [146, -19], [153, -26], [150, -37], [140, -38], [135, -34], [130, -32], [116, -35], [114, -28]],
-  // Nový Zéland
-  [[172, -34], [178, -38], [174, -42], [171, -45], [167, -46], [172, -40]],
-];
-
-const VB = { x: 0, y: 15, w: 360, h: 135 }; // ořízne póly
+const VB = { x: 0, y: 12, w: 360, h: 138 }; // ořízne póly (cca 78 S až 60 J)
+const BAND_W = 15; // jedno časové pásmo = 15 stupňů délky
 
 function project(lat, lon) {
   return [lon + 180, 90 - lat];
 }
 
-function polygonPath(points) {
-  return (
-    points
-      .map(([lon, lat], i) => {
-        const [x, y] = project(lat, lon);
-        return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
-      })
-      .join(" ") + " Z"
-  );
-}
-
-const LAND_PATHS = LAND.map(polygonPath).join(" ");
-
 /** Pozice bodu zóny v souřadnicích SVG (nebo null). */
 export function zonePoint(id) {
   const c = ZONE_COORDS[id];
-  if (!c) return null;
-  return project(c[0], c[1]);
+  return c ? project(c[0], c[1]) : null;
 }
 
 export const MAP_VIEWBOX = VB;
+
+/** Pruh pásma kolem dané délky, s přetečením přes datovou hranici. */
+function bandRects(x) {
+  const left = x - BAND_W / 2;
+  const rects = [[left, BAND_W]];
+  if (left < 0) rects.push([left + 360, BAND_W]);
+  if (left + BAND_W > 360) rects.push([left - 360, BAND_W]);
+  return rects
+    .map(
+      ([bx, bw]) =>
+        `<rect class="map-band" x="${bx}" y="${VB.y}" width="${bw}" height="${VB.h}"></rect>` +
+        `<line class="map-band-line" x1="${bx + bw / 2}" y1="${VB.y}" x2="${bx + bw / 2}" y2="${VB.y + VB.h}"></line>`
+    )
+    .join("");
+}
 
 /**
  * Vrátí SVG mapy jako string.
  * @param {object} o
  * @param {Array} o.zones ZONES
  * @param {string|null} o.activeId zóna, co slaví teď (růžová)
- * @param {Set} o.doneIds zóny s check-inem
+ * @param {Set} o.doneIds zóny s check-inem (zelené)
  * @param {boolean} o.mini malá placka na obrazovce zóny
  */
 export function mapSvg({ zones, activeId, doneIds, mini }) {
+  const ap = activeId ? zonePoint(activeId) : null;
+
   const dots = zones
     .map((z) => {
+      if (z.id === activeId) return "";
       const p = zonePoint(z.id);
       if (!p) return "";
-      const [x, y] = p;
-      if (z.id === activeId) return "";
       const done = doneIds && doneIds.has(z.id);
-      const r = mini ? 2.6 : 2.1;
-      return `<circle class="map-dot${done ? " map-dot-done" : ""}" cx="${x}" cy="${y}" r="${r}"><title>${z.label}</title></circle>`;
+      return `<circle class="map-dot${done ? " map-dot-done" : ""}" cx="${p[0]}" cy="${p[1]}" r="${mini ? 2.8 : 2}"><title>${z.label}</title></circle>`;
     })
     .join("");
 
   let active = "";
-  const ap = activeId ? zonePoint(activeId) : null;
   if (ap) {
-    const [x, y] = ap;
     const zone = zones.find((z) => z.id === activeId);
+    const [x, y] = ap;
     active = `
-      <circle class="map-pulse" cx="${x}" cy="${y}" r="${mini ? 9 : 6}"></circle>
-      <circle class="map-active" cx="${x}" cy="${y}" r="${mini ? 4.5 : 3.4}"></circle>
+      <circle class="map-pulse" cx="${x}" cy="${y}" r="${mini ? 10 : 6}"></circle>
+      <circle class="map-active" cx="${x}" cy="${y}" r="${mini ? 4.6 : 3.2}"></circle>
       ${mini ? "" : `<text class="map-label" x="${x}" y="${y - 6}" text-anchor="middle">${zone ? zone.label : ""}</text>`}`;
   }
 
+  const grid = mini
+    ? ""
+    : `<g class="map-grid">${[...Array(25)].map((_, i) => `<line x1="${i * 15}" y1="${VB.y}" x2="${i * 15}" y2="${VB.y + VB.h}"></line>`).join("")}</g>`;
+
   return `<svg class="map-svg${mini ? " map-svg-mini" : ""}" viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="bandGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#ff5d8f" stop-opacity="0"></stop>
+        <stop offset="0.5" stop-color="#ff5d8f" stop-opacity="0.55"></stop>
+        <stop offset="1" stop-color="#ff5d8f" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
     <rect x="${VB.x}" y="${VB.y}" width="${VB.w}" height="${VB.h}" class="map-sea"></rect>
-    ${mini ? "" : `<g class="map-grid">${[...Array(11)].map((_, i) => `<line x1="${i * 36}" y1="${VB.y}" x2="${i * 36}" y2="${VB.y + VB.h}"></line>`).join("")}</g>`}
-    <path class="map-land" d="${LAND_PATHS}"></path>
+    ${grid}
+    ${ap ? bandRects(ap[0]) : ""}
+    <path class="map-land" d="${LAND_PATH}"></path>
     ${dots}
     ${active}
   </svg>`;

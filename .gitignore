@@ -7,3 +7,4 @@ __pycache__/
 .kiro/artifacts/
 .kiro/settings/
 .preview-serve.log
+.geo/

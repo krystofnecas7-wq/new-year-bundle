@@ -24,7 +24,7 @@ Otevři http://localhost:8777/?demo=1
   příprava na další zónu.
 - **Velké odpočítávání**: posledních 10 vteřin přes celý displej, pak "TEĎ!".
   Ťuknutím jde zavřít.
-- **Mapa noci**: NÁČRT. Hrubé kontinenty, zoom, posouvání, slavící zóna růžově,
+- **Mapa noci**: skutečné kontinenty (Natural Earth), růžový pruh pásma, kde je půlnoc, zoom a posouvání (i dvěma prsty), slavící zóna růžově,
   tvoje check-iny zeleně, seznam co tě čeká.
 - **Ty a tvoje parta**: víc účtů na jednom mobilu, přepínač "u toho" (check-in se zapíše všem, kdo jsou u toho), mazání účtu, pozvánka odkazem, záloha
   a obnova postupu kódem.
@@ -54,7 +54,9 @@ js/zones.js           data 31 zastávek (perličky, výzvy, příprava)
 js/time.js            hodiny, demo mód, výpočet půlnocí v českém čase
 js/i18n.js            texty CZ a EN
 js/facts.js           náhodné kraviny (várka 1, cíl 500+)
-js/map.js             náčrt mapy světa
+js/map.js             mapa noci
+js/land.js            tvary pevniny (generuje scripts/build_land.mjs)
+js/fx.js              ohňostroje v pozadí
 js/profiles.js        lokální účty, parta, záloha
 js/share.js           kartička do stories
 sw.js                 service worker (nejdřív síť, offline záloha)
@@ -66,6 +68,6 @@ scripts/              testy a pomůcky
 
 - Texty "O pásmu" a perličky u většiny zón (doplní se z podkladů).
 - Knihovna kravin: 241 z cílových 500+.
-- Opravdová mapa, reálný Instagram handle, finální logo a ikony.
+- Reálný Instagram handle.
 - Anglické verze obsahu zón.
 - Zvuk u odpočtu (odloženo).

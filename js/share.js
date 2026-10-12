@@ -25,7 +25,16 @@ function wrap(ctx, text, maxWidth) {
   return lines;
 }
 
-function draw({ kicker, big, line, sub, brand, by }) {
+function loadLogo() {
+  return new Promise((res) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => res(null);
+    img.src = "icons/logo.svg";
+  });
+}
+
+function draw({ kicker, big, line, sub, brand, by }, logo) {
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
@@ -56,9 +65,10 @@ function draw({ kicker, big, line, sub, brand, by }) {
 
   ctx.textAlign = "center";
 
+  if (logo) ctx.drawImage(logo, W / 2 - 80, 70, 160, 160);
   ctx.fillStyle = "#ffd166";
   ctx.font = `800 46px ${font}`;
-  ctx.fillText(brand.toUpperCase(), W / 2, 170);
+  ctx.fillText(brand.toUpperCase(), W / 2, logo ? 300 : 170);
 
   ctx.fillStyle = "#c8c8e0";
   ctx.font = `700 56px ${font}`;
@@ -90,7 +100,7 @@ function draw({ kicker, big, line, sub, brand, by }) {
  * @returns {Promise<"shared"|"downloaded"|"cancelled">}
  */
 export async function shareCard(opts) {
-  const canvas = draw(opts);
+  const canvas = draw(opts, await loadLogo());
   const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
   if (!blob) throw new Error("canvas toBlob failed");
   const file = new File([blob], "new-year-bundle.png", { type: "image/png" });

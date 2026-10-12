@@ -145,6 +145,13 @@ strong {
   cursor: pointer;
 }
 
+.brand-logo {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
 .brand-mark {
   padding: 4px 8px;
   border-radius: 9px;
@@ -1294,15 +1301,26 @@ strong {
 }
 
 .map-land {
-  fill: #1c2748;
-  stroke: #2a3358;
-  stroke-width: 0.4;
+  fill: #1f2b52;
+  stroke: #33407a;
+  stroke-width: 0.25;
   stroke-linejoin: round;
+}
+
+.map-band {
+  fill: url(#bandGrad);
+}
+
+.map-band-line {
+  stroke: var(--pink);
+  stroke-width: 0.5;
+  stroke-dasharray: 2 2;
+  opacity: 0.8;
 }
 
 .map-grid line {
   stroke: #141c38;
-  stroke-width: 0.3;
+  stroke-width: 0.25;
 }
 
 .map-dot {

@@ -5,7 +5,7 @@
  * a appka pořád jede i offline (třeba když v noci padne signál).
  */
 
-const CACHE = "nyb-shell-v6";
+const CACHE = "nyb-shell-v9";
 
 const SHELL = [
   "./",
@@ -18,11 +18,13 @@ const SHELL = [
   "./js/i18n.js",
   "./js/facts.js",
   "./js/map.js",
+  "./js/land.js",
   "./js/profiles.js",
   "./js/share.js",
   "./js/fx.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./icons/logo.svg",
 ];
 
 self.addEventListener("install", (event) => {

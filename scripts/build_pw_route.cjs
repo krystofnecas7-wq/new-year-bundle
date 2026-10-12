@@ -4,11 +4,11 @@
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
-const files = ["index.html", "manifest.webmanifest", "css/styles.css", "js/app.js", "js/zones.js", "js/time.js", "js/i18n.js", "js/facts.js", "js/map.js", "js/profiles.js", "js/share.js", "js/fx.js", "sw.js"];
+const files = ["index.html", "manifest.webmanifest", "css/styles.css", "js/app.js", "js/zones.js", "js/time.js", "js/i18n.js", "js/facts.js", "js/map.js", "js/land.js", "js/profiles.js", "js/share.js", "js/fx.js", "sw.js", "icons/logo.svg"];
 const map = {};
 for (const f of files) map["/" + f] = fs.readFileSync(path.join(root, f), "utf8");
 map["/"] = map["/index.html"];
-const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".webmanifest": "application/manifest+json" };
+const types = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml" };
 const url = process.argv[2] || "http://nyb.test/?demo=1";
 const code = `async (page) => {
 const files=${JSON.stringify(map)};
