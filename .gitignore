@@ -8,3 +8,5 @@ __pycache__/
 .kiro/settings/
 .preview-serve.log
 .geo/
+agent-os/
+ke-stazeni/
